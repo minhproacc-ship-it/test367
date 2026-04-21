@@ -3,20 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Caro vs AI Siêu Giỏi</title>
+    <title>Caro vs AI Siêu Tốc</title>
     <style>
         :root {
-            --bg: #1e1e2e;
-            --board-bg: #2d2d44;
-            --cell: #3a3a5c;
-            --cell-hover: #45456d;
-            --x-color: #ff6b6b;
-            --o-color: #4ecdc4;
-            --text: #e0e0e0;
-            --accent: #7c4dff;
+            --bg: #0f172a;
+            --board-bg: #1e293b;
+            --cell: #334155;
+            --cell-hover: #475569;
+            --x-color: #f87171;
+            --o-color: #38bdf8;
+            --text: #e2e8f0;
+            --accent: #8b5cf6;
+            --danger: #ef4444;
         }
+        * { box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: system-ui, -apple-system, sans-serif;
             background: var(--bg);
             color: var(--text);
             display: flex;
@@ -26,239 +28,230 @@
             min-height: 100vh;
             margin: 0;
             user-select: none;
+            overflow: hidden;
         }
-        h1 { margin-bottom: 10px; }
-        #status { font-size: 1.2rem; margin: 10px 0; height: 24px; }
+
+        /* LANDING */
+        #landing { text-align: center; animation: fadeUp 0.6s ease; }
+        #landing h1 { font-size: 2.8rem; margin: 0 0 8px; background: linear-gradient(135deg, #f87171, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        #landing p { margin: 0 0 24px; color: #94a3b8; }
+        #playBtn {
+            padding: 16px 40px; font-size: 1.2rem; font-weight: 600;
+            background: linear-gradient(135deg, var(--accent), #ec4899);
+            color: white; border: none; border-radius: 12px; cursor: pointer;
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.35);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        #playBtn:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(139, 92, 246, 0.5); }
+        .hint { font-size: 0.8rem; color: #64748b; margin-top: 16px; }
+
+        /* PRANK */
+        #prankOverlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.95); z-index: 9999;
+            flex-direction: column; align-items: center; justify-content: center;
+        }
+        .fakePopup {
+            position: absolute; background: #1e293b; border: 1px solid var(--danger);
+            border-radius: 10px; width: 280px; overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: float 2s infinite ease-in-out;
+        }
+        .popupHeader { background: linear-gradient(90deg, #ef4444, #b91c1c); color: white; padding: 8px 12px; font-weight: 600; font-size: 0.85rem; }
+        .popupBody { padding: 14px; font-size: 0.85rem; color: #cbd5e1; text-align: center; line-height: 1.4; }
+        #fakeLoader { text-align: center; z-index: 10000; }
+        .loader-icon { font-size: 2.5rem; animation: spin 1s linear infinite; margin-bottom: 8px; }
+        .prog-track { width: 240px; height: 6px; background: #334155; border-radius: 3px; margin: 12px auto 6px; overflow: hidden; }
+        .prog-bar { width: 0%; height: 100%; background: linear-gradient(90deg, #ef4444, #f59e0b); transition: width 0.3s; }
+        .loader-text { font-family: monospace; color: var(--danger); font-size: 0.95rem; }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes float { 0%, 100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-6px) rotate(1deg); } }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* GAME */
+        #gameContainer { display: none; text-align: center; }
+        #status { font-size: 1.1rem; margin: 10px 0 14px; height: 24px; color: #94a3b8; }
         #board {
-            display: grid;
-            grid-template-columns: repeat(15, 36px);
-            grid-template-rows: repeat(15, 36px);
-            gap: 4px;
-            background: var(--board-bg);
-            padding: 10px;
-            border-radius: 8px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            display: grid; grid-template-columns: repeat(15, 32px); grid-template-rows: repeat(15, 32px);
+            gap: 3px; background: var(--board-bg); padding: 8px; border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
         }
         .cell {
-            background: var(--cell);
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s;
+            background: var(--cell); border-radius: 5px; display: flex; align-items: center; justify-content: center;
+            font-size: 20px; font-weight: bold; cursor: pointer; transition: all 0.15s;
         }
-        .cell:hover:not(.taken) { background: var(--cell-hover); transform: scale(0.95); }
+        .cell:hover:not(.taken) { background: var(--cell-hover); transform: scale(0.96); }
         .cell.taken { cursor: default; }
-        .cell.x { color: var(--x-color); }
-        .cell.o { color: var(--o-color); }
-        .cell.last { box-shadow: 0 0 0 2px #fff; }
-        button {
-            margin-top: 15px;
-            padding: 10px 24px;
-            font-size: 1rem;
-            background: var(--accent);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background 0.2s;
+        .cell.x { color: var(--x-color); text-shadow: 0 0 8px rgba(248, 113, 113, 0.4); }
+        .cell.o { color: var(--o-color); text-shadow: 0 0 8px rgba(56, 189, 248, 0.4); }
+        .cell.last { box-shadow: 0 0 0 2px #fff, 0 0 12px rgba(255,255,255,0.3); }
+        button.reset-btn {
+            margin-top: 18px; padding: 10px 28px; font-size: 0.95rem; background: var(--accent);
+            color: white; border: none; border-radius: 8px; cursor: pointer; transition: 0.2s;
         }
-        button:hover { background: #5e35b1; }
+        button.reset-btn:hover { background: #7c3aed; }
         @media (max-width: 600px) {
-            #board { grid-template-columns: repeat(15, 22px); grid-template-rows: repeat(15, 22px); }
-            .cell { font-size: 16px; }
+            #board { grid-template-columns: repeat(15, 20px); grid-template-rows: repeat(15, 20px); gap: 2px; }
+            .cell { font-size: 14px; border-radius: 3px; }
         }
     </style>
 </head>
 <body>
-    <h1>🎮 Caro vs AI</h1>
-    <div id="status">Lượt của bạn (X)</div>
-    <div id="board"></div>
-    <button onclick="resetGame()">Chơi lại</button>
+    <div id="landing">
+        <h1>🎮 Caro AI Siêu Tốc</h1>
+        <p>Thử sức trí tuệ nhân tạo tối ưu cho trình duyệt</p>
+        <button id="playBtn" onclick="startPrank()">CHƠI NGAY</button>
+        <p class="hint">💡 Nhấn ESC để bỏ qua hiệu ứng</p>
+    </div>
+
+    <div id="prankOverlay"></div>
+
+    <div id="gameContainer">
+        <h2 style="margin:0 0 6px">🎮 Caro vs AI</h2>
+        <div id="status">Lượt của bạn (X)</div>
+        <div id="board"></div>
+        <button class="reset-btn" onclick="resetGame()">Chơi lại</button>
+    </div>
 
     <script>
-        const SIZE = 15;
-        const EMPTY = 0, HUMAN = 1, AI = 2;
+        // ================= PRANK =================
+        let prankTimers = [];
+        function startPrank() {
+            document.getElementById('landing').style.display = 'none';
+            document.getElementById('prankOverlay').style.display = 'flex';
+            const msgs = [
+                "🦠 PHÁT HIỆN MÃ ĐỘC TẤN CÔNG!", "⚠️ MÁY BẠN ĐANG BỊ XÂM NHẬP...",
+                "💀 3 FILE HỆ THỐNG BỊ MÃ HÓA!", "📡 ĐANG GỬI DỮ LIỆU VỀ SERVER...",
+                "🔒 CAM TRƯỚC MẶT ĐANG BỊ THEO DÕI", "💾 Ổ C: 99% FULL... ĐANG XÓA HỆ ĐIỀU HÀNH",
+                "🤖 AI ĐÃ CHIẾM QUYỀN KIỂM SOÁT!", "🚨 KHÔNG ĐƯỢC TẮT MÁY!"
+            ];
+            msgs.forEach((m,i) => prankTimers.push(setTimeout(()=>createPopup(m), i*450)));
+            const loader = document.createElement('div'); loader.id='fakeLoader';
+            loader.innerHTML=`<div class="loader-icon">⚙️</div><div class="loader-text">QUÉT HỆ THỐNG... 0%</div><div class="prog-track"><div id="progBar" class="prog-bar"></div></div>`;
+            document.getElementById('prankOverlay').appendChild(loader);
+            let p=0;
+            let pi=setInterval(()=>{p=Math.min(p+Math.random()*15+4,100); document.getElementById('progBar').style.width=p+'%'; document.querySelector('.loader-text').textContent=`QUÉT HỆ THỐNG... ${Math.floor(p)}%`;},350);
+            prankTimers.push(pi);
+            prankTimers.push(setTimeout(endPrank, 5500));
+        }
+        function createPopup(t){
+            const p=document.createElement('div'); p.className='fakePopup';
+            p.style.top=(15+Math.random()*55)+'%'; p.style.left=(10+Math.random()*65)+'%';
+            p.innerHTML=`<div class="popupHeader">⚠️ CẢNH BÁO BẢO MẬT</div><div class="popupBody">${t}</div>`;
+            document.getElementById('prankOverlay').appendChild(p);
+        }
+        function endPrank(){prankTimers.forEach(t=>clearTimeout(t)); prankTimers=[]; document.getElementById('prankOverlay').style.display='none'; document.getElementById('gameContainer').style.display='block'; initBoard();}
+        document.addEventListener('keydown', e=>{if(e.key==='Escape'&&document.getElementById('prankOverlay').style.display==='flex')endPrank();});
+
+        // ================= AI CARO TỐI ƯU =================
+        const SIZE = 15, EMPTY = 0, HUMAN = 1, AI = 2;
         const DIRS = [[0,1],[1,0],[1,1],[1,-1]];
-        
-        let board = Array(SIZE).fill().map(() => Array(SIZE).fill(EMPTY));
-        let gameOver = false;
-        let isAiThinking = false;
-        let lastMove = null;
+        let board = Array(SIZE).fill().map(()=>Array(SIZE).fill(EMPTY));
+        let gameOver = false, isAiThinking = false, lastMove = null;
 
-        // Bảng điểm pattern (AI dương, Người âm)
-        const PAT_SCORES = {
-            "5": 100000,
-            "O4O": 10000, "O4X": 500, "X4O": 500, "X4X": 0,
-            "O3O": 1000, "O3X": 100, "X3O": 100, "X3X": 10,
-            "O2O": 100, "O2X": 10, "X2O": 10, "X2X": 0
-        };
-
-        function initBoard() {
-            const boardEl = document.getElementById('board');
-            boardEl.innerHTML = '';
-            for (let r = 0; r < SIZE; r++) {
-                for (let c = 0; c < SIZE; c++) {
-                    const cell = document.createElement('div');
-                    cell.className = 'cell';
-                    cell.dataset.r = r;
-                    cell.dataset.c = c;
-                    cell.addEventListener('click', () => handleMove(r, c));
-                    boardEl.appendChild(cell);
-                }
-            }
-        }
-
-        function renderBoard() {
-            const cells = document.querySelectorAll('.cell');
-            cells.forEach(cell => {
-                const r = +cell.dataset.r, c = +cell.dataset.c;
-                cell.className = 'cell';
-                cell.textContent = '';
-                if (board[r][c] === HUMAN) { cell.textContent = 'X'; cell.classList.add('x', 'taken'); }
-                if (board[r][c] === AI)   { cell.textContent = 'O'; cell.classList.add('o', 'taken'); }
-                if (lastMove && lastMove.r === r && lastMove.c === c) cell.classList.add('last');
-            });
-        }
-
-        function setStatus(msg) { document.getElementById('status').textContent = msg; }
-
-        function checkWin(player) {
-            for (let r = 0; r < SIZE; r++) {
-                for (let c = 0; c < SIZE; c++) {
-                    if (board[r][c] !== player) continue;
-                    for (let [dr, dc] of DIRS) {
-                        let count = 1;
-                        for (let i = 1; i < 5; i++) {
-                            let nr = r + dr*i, nc = c + dc*i;
-                            if (nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE && board[nr][nc] === player) count++;
-                            else break;
-                        }
-                        if (count >= 5) return true;
-                    }
-                }
+        // ✅ Kiểm tra thắng cục bộ (nhanh hơn quét toàn bàn)
+        function checkWinAround(player, r, c) {
+            for (let [dr, dc] of DIRS) {
+                let count = 1;
+                for (let i=1; i<5; i++) { let nr=r+dr*i, nc=c+dc*i; if(nr>=0&&nr<SIZE&&nc>=0&&nc<SIZE&&board[nr][nc]===player) count++; else break; }
+                for (let i=1; i<5; i++) { let nr=r-dr*i, nc=c-dc*i; if(nr>=0&&nr<SIZE&&nc>=0&&nc<SIZE&&board[nr][nc]===player) count++; else break; }
+                if (count >= 5) return true;
             }
             return false;
         }
 
-        function getCandidates() {
-            let moves = new Set();
-            let hasPiece = false;
-            for (let r = 0; r < SIZE; r++) {
-                for (let c = 0; c < SIZE; c++) {
-                    if (board[r][c] !== EMPTY) hasPiece = true;
-                }
-            }
-            if (!hasPiece) return [{r:7, c:7, score:0}]; // Nước đầu tiên ở giữa
-
-            for (let r = 0; r < SIZE; r++) {
-                for (let c = 0; c < SIZE; c++) {
-                    if (board[r][c] !== EMPTY) continue;
-                    // Chỉ xét ô trống trong bán kính 2 quanh quân đã có
-                    let near = false;
-                    for (let dr = -2; dr <= 2 && !near; dr++) {
-                        for (let dc = -2; dc <= 2 && !near; dc++) {
-                            let nr = r+dr, nc = c+dc;
-                            if (nr>=0 && nr<SIZE && nc>=0 && nc<SIZE && board[nr][nc] !== EMPTY) near = true;
-                        }
-                    }
-                    if (near) moves.add(`${r},${c}`);
-                }
-            }
-            // Đánh giá sơ bộ để sắp xếp thứ tự tìm kiếm (tối ưu Alpha-Beta)
-            let scoredMoves = [];
-            for (let key of moves) {
-                let [r, c] = key.split(',').map(Number);
-                let score = quickEvaluateCell(r, c, AI) + quickEvaluateCell(r, c, HUMAN) * 1.2;
-                scoredMoves.push({r, c, score});
-            }
-            return scoredMoves.sort((a,b) => b.score - a.score);
+        // ✅ Tìm nước thắng/chặn ngay lập tức (ưu tiên tuyệt đối)
+        function getImmediateMove() {
+            let cands = [];
+            for(let r=0;r<SIZE;r++) for(let c=0;c<SIZE;c++) if(board[r][c]===EMPTY) cands.push({r,c});
+            // AI thắng?
+            for(let {r,c} of cands) { board[r][c]=AI; if(checkWinAround(AI,r,c)){board[r][c]=EMPTY; return {r,c};} board[r][c]=EMPTY; }
+            // Chặn người?
+            for(let {r,c} of cands) { board[r][c]=HUMAN; if(checkWinAround(HUMAN,r,c)){board[r][c]=EMPTY; return {r,c};} board[r][c]=EMPTY; }
+            return null;
         }
 
-        function quickEvaluateCell(r, c, player) {
-            let score = 0;
+        // ✅ Đánh giá nhanh 1 ô (cho việc chọn ứng viên)
+        function scoreCell(r, c) {
+            let s = 0;
             for (let [dr, dc] of DIRS) {
                 let line = [];
-                // Lấy chuỗi 9 ô xung quanh để đánh pattern
-                for (let i = -4; i <= 4; i++) {
-                    let nr = r + dr*i, nc = c + dc*i;
-                    if (nr<0 || nr>=SIZE || nc<0 || nc>=SIZE) line.push('X'); // Biên coi như chặn
-                    else if (board[nr][nc] === EMPTY) line.push('_');
-                    else if (board[nr][nc] === player) line.push('O');
-                    else line.push('X');
-                }
-                let s = line.join('');
-                if (s.includes('OOOOO')) score += PAT_SCORES["5"];
-                else if (s.includes('O_OOO') || s.includes('OO_OO') || s.includes('OOO_O')) score += PAT_SCORES["O4O"];
-                else if (s.includes('O_OOO') || s.includes('OO_OO') || s.includes('OOO_O')) score += PAT_SCORES["O4O"]; // Đơn giản hóa
-                else if (s.includes('O_OO') || s.includes('OO_O')) score += PAT_SCORES["O3O"];
-                else if (s.includes('O_O')) score += PAT_SCORES["O2O"];
+                for(let i=-2;i<=2;i++) { let nr=r+dr*i, nc=c+dc*i; line.push((nr<0||nr>=SIZE||nc<0||nc>=SIZE)?0:board[nr][nc]); }
+                let k=line.join('');
+                if(k.includes('0,2,2,2,0')) s+=6000;
+                if(k.includes('2,2,0,2,2')||k.includes('2,0,2,2,2')||k.includes('2,2,2,0,2')) s+=12000;
+                if(k.includes('0,1,1,1,0')) s+=800;
+                if(k.includes('1,1,0,1,1')||k.includes('1,0,1,1,1')||k.includes('1,1,1,0,1')) s+=2500;
+                s += line.filter(x=>x===AI).length * 15;
             }
-            return score;
+            return s;
         }
 
-        // Hàm đánh giá toàn bàn cờ (tối ưu cho Minimax)
+        // ✅ Lấy tối đa 10 ứng viên tốt nhất
+        function getCandidates() {
+            let has = board.flat().some(x=>x!==EMPTY);
+            if (!has) return [{r:7,c:7}];
+            let moves = new Map();
+            for (let r=0;r<SIZE;r++) for (let c=0;c<SIZE;c++) {
+                if(board[r][c]!==EMPTY) continue;
+                let near=false;
+                for(let dr=-2;dr<=2&&!near;dr++) for(let dc=-2;dc<=2&&!near;dc++) {
+                    let nr=r+dr, nc=c+dc;
+                    if(nr>=0&&nr<SIZE&&nc>=0&&nc<SIZE&&board[nr][nc]!==EMPTY) near=true;
+                }
+                if(near) moves.set(`${r},${c}`, scoreCell(r,c));
+            }
+            return Array.from(moves.entries()).map(([k,v])=>{let [r,c]=k.split(',').map(Number);return{r,c,score:v};}).sort((a,b)=>b.score-a.score).slice(0, 10);
+        }
+
+        // ✅ Hàm đánh giá bàn cờ (tối ưu cho lá)
         function evaluate() {
-            let aiScore = 0, humanScore = 0;
-            // Quét các dòng 5 ô theo 4 hướng
-            for (let r = 0; r < SIZE; r++) {
-                for (let c = 0; c < SIZE; c++) {
-                    for (let [dr, dc] of DIRS) {
-                        let line = [];
-                        let valid = true;
-                        for (let i = 0; i < 5; i++) {
-                            let nr = r + dr*i, nc = c + dc*i;
-                            if (nr < 0 || nr >= SIZE || nc < 0 || nc >= SIZE) { valid = false; break; }
-                            line.push(board[nr][nc]);
-                        }
-                        if (!valid) continue;
-                        let aiCount = line.filter(v => v === AI).length;
-                        let huCount = line.filter(v => v === HUMAN).length;
-                        if (aiCount + huCount === 5) continue; // Không có ô trống
-
-                        if (aiCount === 5) aiScore += PAT_SCORES["5"];
-                        else if (huCount === 5) humanScore += PAT_SCORES["5"];
-                        else if (aiCount === 4) aiScore += (line.includes(EMPTY) ? PAT_SCORES["O4O"] : PAT_SCORES["O4X"]);
-                        else if (huCount === 4) humanScore += (line.includes(EMPTY) ? PAT_SCORES["O4O"] : PAT_SCORES["O4X"]);
-                        else if (aiCount === 3) aiScore += (line.filter(v=>v===EMPTY).length>=2 ? PAT_SCORES["O3O"] : PAT_SCORES["O3X"]);
-                        else if (huCount === 3) humanScore += (line.filter(v=>v===EMPTY).length>=2 ? PAT_SCORES["O3O"] : PAT_SCORES["O3X"]);
-                        else if (aiCount === 2) aiScore += PAT_SCORES["O2O"];
-                        else if (huCount === 2) humanScore += PAT_SCORES["O2O"];
+            let ai=0, hu=0;
+            // Chỉ đếm pattern cơ bản để tránh quét chậm
+            for (let r=0;r<SIZE;r++) for (let c=0;c<SIZE;c++) {
+                if(board[r][c]===EMPTY) continue;
+                for(let [dr,dc] of DIRS) {
+                    let cnt=0, empty=0;
+                    for(let i=0;i<5;i++){
+                        let nr=r+dr*i, nc=c+dc*i;
+                        if(nr<0||nr>=SIZE||nc<0||nc>=SIZE) break;
+                        if(board[nr][nc]===board[r][c]) cnt++;
+                        else if(board[nr][nc]===EMPTY) empty++;
+                        else break;
                     }
+                    if(cnt===5) { board[r][c]===AI ? ai+=100000 : hu+=100000; }
+                    else if(cnt===4&&empty===1) { board[r][c]===AI ? ai+=12000 : hu+=12000; }
+                    else if(cnt===3&&empty===2) { board[r][c]===AI ? ai+=1500 : hu+=1500; }
                 }
             }
-            return aiScore - humanScore;
+            return ai - hu;
         }
 
-        const MAX_DEPTH = 4;
+        const MAX_DEPTH = 3; // Đủ mạnh + cực nhanh
         function minimax(depth, alpha, beta, maximizing) {
-            if (depth === 0 || checkWin(HUMAN) || checkWin(AI)) return evaluate();
-
-            let candidates = getCandidates();
-            if (candidates.length === 0) return evaluate();
+            if (depth === 0 || checkWinAround(HUMAN, lastMove?.r, lastMove?.c) || checkWinAround(AI, lastMove?.r, lastMove?.c)) return evaluate();
+            let cands = getCandidates();
+            if (!cands.length) return evaluate();
 
             if (maximizing) {
                 let maxEval = -Infinity;
-                for (let {r, c} of candidates) {
-                    board[r][c] = AI;
-                    let evalScore = minimax(depth - 1, alpha, beta, false);
+                for (let {r,c} of cands) {
+                    board[r][c] = AI; lastMove={r,c};
+                    let ev = minimax(depth-1, alpha, beta, false);
                     board[r][c] = EMPTY;
-                    maxEval = Math.max(maxEval, evalScore);
-                    alpha = Math.max(alpha, evalScore);
-                    if (beta <= alpha) break; // Cắt tỉa
+                    maxEval = Math.max(maxEval, ev);
+                    alpha = Math.max(alpha, ev);
+                    if (beta <= alpha) break;
                 }
                 return maxEval;
             } else {
                 let minEval = Infinity;
-                for (let {r, c} of candidates) {
-                    board[r][c] = HUMAN;
-                    let evalScore = minimax(depth - 1, alpha, beta, true);
+                for (let {r,c} of cands) {
+                    board[r][c] = HUMAN; lastMove={r,c};
+                    let ev = minimax(depth-1, alpha, beta, true);
                     board[r][c] = EMPTY;
-                    minEval = Math.min(minEval, evalScore);
-                    beta = Math.min(beta, evalScore);
+                    minEval = Math.min(minEval, ev);
+                    beta = Math.min(beta, ev);
                     if (beta <= alpha) break;
                 }
                 return minEval;
@@ -268,64 +261,64 @@
         function aiMove() {
             if (gameOver || isAiThinking) return;
             isAiThinking = true;
-            setStatus("🤔 AI đang suy nghĩ...");
-
+            setStatus("🤖 AI đang tính...");
+            
             setTimeout(() => {
-                let bestMove = null, bestScore = -Infinity;
-                let candidates = getCandidates();
-
-                // Tìm nước đi tốt nhất
-                for (let {r, c} of candidates) {
-                    board[r][c] = AI;
-                    let score = minimax(MAX_DEPTH - 1, -Infinity, Infinity, false);
-                    board[r][c] = EMPTY;
-                    if (score > bestScore) {
-                        bestScore = score;
-                        bestMove = {r, c};
-                    }
+                // 1. Ưu tiên thắng/chặn ngay
+                let imm = getImmediateMove();
+                if (imm) {
+                    board[imm.r][imm.c] = AI; lastMove = imm;
+                    renderBoard(); checkEnd(); isAiThinking = false; return;
                 }
-
-                if (bestMove) {
-                    board[bestMove.r][bestMove.c] = AI;
-                    lastMove = bestMove;
-                    renderBoard();
-                    
-                    if (checkWin(AI)) {
-                        setStatus("🤖 AI thắng! Bạn muốn chơi lại không?");
-                        gameOver = true;
-                    } else {
-                        setStatus("Lượt của bạn (X)");
-                    }
+                // 2. Minimax với ứng viên đã lọc
+                let best = null, bestScore = -Infinity;
+                let cands = getCandidates();
+                for (let {r,c} of cands) {
+                    board[r][c] = AI; lastMove={r,c};
+                    let sc = minimax(MAX_DEPTH-1, -Infinity, Infinity, false);
+                    board[r][c] = EMPTY;
+                    if (sc > bestScore) { bestScore = sc; best = {r,c}; }
+                }
+                if (best) {
+                    board[best.r][best.c] = AI; lastMove = best;
+                    renderBoard(); checkEnd();
                 }
                 isAiThinking = false;
             }, 50);
         }
 
-        function handleMove(r, c) {
-            if (gameOver || isAiThinking || board[r][c] !== EMPTY) return;
-            
-            board[r][c] = HUMAN;
-            lastMove = {r, c};
-            renderBoard();
+        function checkEnd() {
+            if (checkWinAround(AI, lastMove.r, lastMove.c)) { setStatus("🤖 AI thắng! Chơi lại?"); gameOver = true; }
+            else setStatus("Lượt của bạn (X)");
+        }
 
-            if (checkWin(HUMAN)) {
-                setStatus("🎉 Bạn thắng! Tuyệt vời!");
-                gameOver = true;
-                return;
+        // ================= UI & GAME LOOP =================
+        function initBoard() {
+            const b = document.getElementById('board'); b.innerHTML='';
+            for(let r=0;r<SIZE;r++) for(let c=0;c<SIZE;c++) {
+                let d = document.createElement('div'); d.className='cell'; d.dataset.r=r; d.dataset.c=c;
+                d.onclick=()=>handleMove(r,c); b.appendChild(d);
             }
+        }
+        function renderBoard() {
+            document.querySelectorAll('.cell').forEach(c => {
+                let r=+c.dataset.r, col=+c.dataset.c; c.className='cell'; c.textContent='';
+                if(board[r][col]===HUMAN) {c.textContent='X'; c.classList.add('x','taken');}
+                if(board[r][col]===AI) {c.textContent='O'; c.classList.add('o','taken');}
+                if(lastMove && lastMove.r===r && lastMove.c===col) c.classList.add('last');
+            });
+        }
+        function setStatus(m){document.getElementById('status').textContent=m;}
+        function handleMove(r,c) {
+            if(gameOver||isAiThinking||board[r][c]!==EMPTY) return;
+            board[r][c]=HUMAN; lastMove={r,c}; renderBoard();
+            if(checkWinAround(HUMAN,r,c)) { setStatus("🎉 Bạn thắng! Tuyệt vời!"); gameOver=true; return; }
             aiMove();
         }
-
         function resetGame() {
-            board = Array(SIZE).fill().map(() => Array(SIZE).fill(EMPTY));
-            gameOver = false;
-            isAiThinking = false;
-            lastMove = null;
-            renderBoard();
-            setStatus("Lượt của bạn (X)");
+            board=Array(SIZE).fill().map(()=>Array(SIZE).fill(EMPTY)); gameOver=false; isAiThinking=false; lastMove=null;
+            renderBoard(); setStatus("Lượt của bạn (X)");
         }
-
-        initBoard();
     </script>
 </body>
 </html>
