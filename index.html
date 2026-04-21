@@ -3,807 +3,415 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iOS 28 Concept</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Minhlords Browser & Search</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --bg: #f5f5f5;
+            --surface: #ffffff;
+            --border: #e0e0e0;
+            --primary: #4285f4;
+            --primary-hover: #3367d6;
+            --text: #202124;
+            --text-secondary: #5f6368;
+            --tab-bg: #e8e8e8;
+            --tab-active: #ffffff;
         }
 
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
-            background: #000;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .phone-frame {
-            width: 393px;
-            height: 852px;
-            background: #1a1a2e;
-            border-radius: 55px;
-            padding: 12px;
-            box-shadow: 
-                0 0 0 3px #3a3a5c,
-                0 0 0 6px #1a1a2e,
-                0 25px 80px rgba(0, 0, 0, 0.5),
-                inset 0 0 60px rgba(255, 255, 255, 0.05);
-            position: relative;
-        }
-
-        .phone-screen {
-            width: 100%;
-            height: 100%;
-            background: url('https://image.qwenlm.ai/public_source/a83fe88b-0c37-4ecb-ad7c-84df1e249377/155f24c3f-907f-4451-9f77-739481bed0b1.png') center/cover;
-            border-radius: 45px;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            height: 100vh;
             overflow: hidden;
-            position: relative;
-        }
-
-        .status-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 28px 8px;
-            color: white;
-            font-size: 16px;
-            font-weight: 600;
-            position: relative;
-            z-index: 10;
-        }
-
-        .dynamic-island {
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 125px;
-            height: 37px;
-            background: #000;
-            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
         }
 
-        .dynamic-island:hover {
-            width: 200px;
-            height: 55px;
-        }
-
-        .dynamic-island-content {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-
-        .dynamic-island:hover .dynamic-island-content {
-            opacity: 1;
-        }
-
-        .dynamic-island .camera {
-            width: 12px;
-            height: 12px;
-            background: #1a1a2e;
-            border-radius: 50%;
-            position: absolute;
-            right: 25px;
-        }
-
-        .dynamic-island .sensor {
-            width: 8px;
-            height: 8px;
-            background: #2a2a4e;
-            border-radius: 50%;
-            position: absolute;
-            right: 10px;
-        }
-
-        .status-icons {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .status-icons svg {
-            width: 18px;
-            height: 18px;
-            fill: white;
-        }
-
-        .battery-icon {
-            width: 26px;
-            height: 12px;
-            border: 2px solid white;
-            border-radius: 4px;
-            position: relative;
-            display: flex;
-            align-items: center;
-            padding: 1px;
-        }
-
-        .battery-icon::after {
-            content: '';
-            position: absolute;
-            right: -4px;
-            width: 3px;
-            height: 6px;
-            background: white;
-            border-radius: 0 2px 2px 0;
-        }
-
-        .battery-level {
-            height: 100%;
-            width: 75%;
-            background: white;
-            border-radius: 2px;
-        }
-
-        .widget-area {
-            padding: 20px 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .widget {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 22px;
-            padding: 16px;
-            color: white;
-            transition: transform 0.2s, background 0.2s;
-            cursor: pointer;
-        }
-
-        .widget:hover {
-            transform: scale(1.02);
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .widget-large {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .widget-date {
-            text-align: center;
-        }
-
-        .widget-date .day {
-            font-size: 14px;
-            opacity: 0.8;
-            text-transform: uppercase;
-        }
-
-        .widget-date .number {
-            font-size: 48px;
-            font-weight: 200;
-            line-height: 1;
-        }
-
-        .widget-weather {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .widget-weather .temp {
-            font-size: 36px;
-            font-weight: 300;
-        }
-
-        .widget-weather .condition {
-            font-size: 13px;
-            opacity: 0.8;
-        }
-
-        .widget-weather svg {
-            width: 40px;
-            height: 40px;
-            fill: #FFD700;
-            margin-bottom: 4px;
-        }
-
-        .widget-music {
-            grid-column: span 2;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .widget-music .album-art {
-            width: 50px;
-            height: 50px;
+        .browser-container {
+            width: 95vw;
+            height: 90vh;
+            background: var(--surface);
             border-radius: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .widget-music .album-art svg {
-            width: 24px;
-            height: 24px;
-            fill: white;
-        }
-
-        .widget-music .info {
-            flex: 1;
-        }
-
-        .widget-music .title {
-            font-size: 15px;
-            font-weight: 600;
-            margin-bottom: 3px;
-        }
-
-        .widget-music .artist {
-            font-size: 13px;
-            opacity: 0.7;
-        }
-
-        .widget-music .controls {
-            display: flex;
-            gap: 16px;
-        }
-
-        .widget-music .controls svg {
-            width: 28px;
-            height: 28px;
-            fill: white;
-            cursor: pointer;
-            transition: transform 0.1s;
-        }
-
-        .widget-music .controls svg:hover {
-            transform: scale(1.1);
-        }
-
-        .app-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px 14px;
-            padding: 10px 20px;
-        }
-
-        .app-item {
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
             display: flex;
             flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-            transition: transform 0.15s;
-        }
-
-        .app-item:hover {
-            transform: scale(1.08);
-        }
-
-        .app-item:active {
-            transform: scale(0.95);
-        }
-
-        .app-icon {
-            width: 62px;
-            height: 62px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            position: relative;
             overflow: hidden;
         }
 
-        .app-icon img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .app-name {
-            color: white;
-            font-size: 11px;
-            text-align: center;
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-            font-weight: 400;
-        }
-
-        .dock {
-            position: absolute;
-            bottom: 20px;
-            left: 14px;
-            right: 14px;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border-radius: 35px;
-            padding: 18px 16px;
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 14px;
-        }
-
-        .dock .app-item .app-icon {
-            width: 65px;
-            height: 65px;
-        }
-
-        .home-indicator {
-            position: absolute;
-            bottom: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 135px;
-            height: 5px;
-            background: white;
-            border-radius: 3px;
-            opacity: 0.8;
-        }
-
-        .page-dots {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            padding: 15px 0;
-        }
-
-        .page-dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.4);
-            transition: all 0.3s;
-        }
-
-        .page-dot.active {
-            background: white;
-            width: 20px;
-            border-radius: 4px;
-        }
-
-        .notification {
-            position: absolute;
-            top: 60px;
-            left: 20px;
-            right: 20px;
-            background: rgba(30, 30, 50, 0.95);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 18px;
-            padding: 14px 16px;
+        /* Top Bar */
+        .top-bar {
             display: flex;
             align-items: center;
-            gap: 12px;
-            color: white;
-            transform: translateY(-100px);
-            opacity: 0;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-        }
-
-        .notification.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
-
-        .notification-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            background: linear-gradient(135deg, #34C759 0%, #30B350 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .notification-icon svg {
-            width: 22px;
-            height: 22px;
-            fill: white;
-        }
-
-        .notification-content {
-            flex: 1;
-        }
-
-        .notification-title {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 2px;
-        }
-
-        .notification-message {
-            font-size: 13px;
-            opacity: 0.8;
-        }
-
-        .notification-time {
-            font-size: 11px;
-            opacity: 0.5;
-        }
-
-        .app-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: #FF3B30;
-            color: white;
-            font-size: 11px;
-            font-weight: 600;
-            min-width: 20px;
-            height: 20px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0 5px;
-        }
-
-        .search-bar {
-            margin: 10px 24px;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 12px;
-            padding: 10px 14px;
-            display: flex;
-            align-items: center;
+            background: var(--tab-bg);
+            padding: 8px 12px;
             gap: 10px;
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tabs {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex: 1;
+            overflow-x: auto;
+        }
+
+        .tab {
+            background: var(--surface);
+            padding: 6px 12px;
+            border-radius: 8px 8px 0 0;
+            font-size: 13px;
             cursor: pointer;
+            max-width: 180px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            position: relative;
+        }
+
+        .tab.active {
+            background: var(--tab-active);
+            font-weight: 500;
+            box-shadow: 0 -2px 0 var(--primary);
+        }
+
+        .new-tab-btn {
+            background: transparent;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 50%;
+            color: var(--text-secondary);
+        }
+
+        .new-tab-btn:hover { background: #d0d0d0; }
+
+        .controls { display: flex; gap: 6px; }
+        .controls button {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 4px 10px;
+            cursor: pointer;
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+        .controls button:hover { background: #f0f0f0; }
+        .controls button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* Address Bar */
+        .address-bar {
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-bottom: 1px solid var(--border);
+        }
+
+        #url-input {
+            width: 100%;
+            padding: 9px 14px;
+            border-radius: 22px;
+            border: 1px solid var(--border);
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        #url-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+        }
+
+        /* Content Area */
+        .content-area { flex: 1; position: relative; overflow: hidden; }
+        .page { display: none; width: 100%; height: 100%; }
+        .page.active { display: block; }
+
+        #home-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            background: var(--surface);
+            height: 100%;
+        }
+
+        .logo {
+            font-size: 52px;
+            font-weight: 700;
+            letter-spacing: -1px;
+            background: linear-gradient(90deg, #4285f4, #34a853, #fbbc05, #ea4335);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .tagline {
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+            max-width: 580px;
+        }
+
+        #search-input {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        #search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+        }
+
+        #search-btn {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 24px;
+            cursor: pointer;
+            font-weight: 500;
             transition: background 0.2s;
         }
 
-        .search-bar:hover {
-            background: rgba(255, 255, 255, 0.2);
+        #search-btn:hover { background: var(--primary-hover); }
+
+        iframe {
+            border: none;
+            background: var(--surface);
         }
 
-        .search-bar svg {
-            width: 18px;
-            height: 18px;
-            fill: rgba(255, 255, 255, 0.6);
+        .loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 24px;
+            height: 24px;
+            border: 3px solid #e0e0e0;
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
         }
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+        @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+        .fallback-msg {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: var(--text-secondary);
+            max-width: 400px;
+            line-height: 1.5;
+            display: none;
         }
 
-        .app-icon.green { background: linear-gradient(180deg, #34C759 0%, #28A745 100%); }
-        .app-icon.blue { background: linear-gradient(180deg, #007AFF 0%, #0056B3 100%); }
-        .app-icon.gray { background: linear-gradient(180deg, #8E8E93 0%, #636366 100%); }
-        .app-icon.orange { background: linear-gradient(180deg, #FF9500 0%, #CC7700 100%); }
-        .app-icon.red { background: linear-gradient(180deg, #FF3B30 0%, #CC2F25 100%); }
-        .app-icon.purple { background: linear-gradient(180deg, #AF52DE 0%, #8B3DB3 100%); }
-        .app-icon.pink { background: linear-gradient(180deg, #FF2D55 0%, #CC2444 100%); }
-        .app-icon.cyan { background: linear-gradient(180deg, #5AC8FA 0%, #42A0C8 100%); }
-        .app-icon.white { background: linear-gradient(180deg, #FFFFFF 0%, #E5E5EA 100%); }
-        .app-icon.black { background: linear-gradient(180deg, #1C1C1E 0%, #000000 100%); }
-
-        .app-icon svg {
-            width: 32px;
-            height: 32px;
-            fill: white;
+        @media (max-width: 768px) {
+            .browser-container { width: 100vw; height: 100vh; border-radius: 0; }
+            .logo { font-size: 40px; }
+            .search-box { flex-direction: column; }
         }
     </style>
 </head>
 <body>
-    <div class="phone-frame">
-        <div class="phone-screen">
-            <div class="status-bar">
-                <span id="currentTime">9:41</span>
-                <div class="dynamic-island" id="dynamicIsland">
-                    <div class="camera"></div>
-                    <div class="sensor"></div>
-                    <div class="dynamic-island-content">
-                        <svg viewBox="0 0 24 24" width="16" height="16" fill="white">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                        </svg>
-                        <span style="font-size: 13px;">Playing Music</span>
-                    </div>
-                </div>
-                <div class="status-icons">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
-                    </svg>
-                    <svg viewBox="0 0 24 24">
-                        <path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/>
-                    </svg>
-                    <div class="battery-icon">
-                        <div class="battery-level"></div>
-                    </div>
+    <div class="browser-container">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="tabs">
+                <div class="tab active" data-url="minhlords://home">Minhlords Home</div>
+                <button class="new-tab-btn" title="New Tab">+</button>
+            </div>
+            <div class="controls">
+                <button id="back-btn" title="Back">←</button>
+                <button id="forward-btn" title="Forward">→</button>
+                <button id="refresh-btn" title="Refresh">↻</button>
+            </div>
+        </div>
+
+        <!-- Address Bar -->
+        <div class="address-bar">
+            <input type="text" id="url-input" placeholder="Search or enter web address (e.g., example.com)">
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <div id="home-page" class="page active">
+                <h1 class="logo">Minhlords</h1>
+                <p class="tagline">Fast. Private. Yours.</p>
+                <div class="search-box">
+                    <input type="text" id="search-input" placeholder="Search the web...">
+                    <button id="search-btn">Search</button>
                 </div>
             </div>
-
-            <div class="notification" id="notification">
-                <div class="notification-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
-                    </svg>
-                </div>
-                <div class="notification-content">
-                    <div class="notification-title">Messages</div>
-                    <div class="notification-message">Hey! Are you free tonight?</div>
-                </div>
-                <div class="notification-time">now</div>
-            </div>
-
-            <div class="widget-area">
-                <div class="widget widget-large">
-                    <div class="widget-date">
-                        <div class="day" id="weekday">Monday</div>
-                        <div class="number" id="dayNumber">15</div>
-                    </div>
-                    <div class="widget-weather">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>
-                        </svg>
-                        <div class="temp">24°</div>
-                        <div class="condition">Sunny</div>
-                    </div>
-                </div>
-                <div class="widget widget-music">
-                    <div class="album-art">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
-                        </svg>
-                    </div>
-                    <div class="info">
-                        <div class="title">Midnight Dreams</div>
-                        <div class="artist">The Weeknd</div>
-                    </div>
-                    <div class="controls">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
-                        </svg>
-                        <svg viewBox="0 0 24 24">
-                            <path d="M8 5v14l11-7z"/>
-                        </svg>
-                        <svg viewBox="0 0 24 24">
-                            <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
-                        </svg>
-                    </div>
+            <div id="web-view-container" class="page">
+                <iframe id="web-view" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-top-navigation-by-user-activation"></iframe>
+                <div class="loader" id="loader"></div>
+                <div class="fallback-msg" id="fallback">
+                    ⚠️ This site blocks embedding for security reasons.<br>
+                    <a href="#" id="open-external" target="_blank" style="color: var(--primary);">Open in new tab</a>
                 </div>
             </div>
-
-            <div class="search-bar">
-                <svg viewBox="0 0 24 24">
-                    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-                </svg>
-                <span>Search</span>
-            </div>
-
-            <div class="app-grid">
-                <div class="app-item" onclick="openApp('Mail')">
-                    <div class="app-icon blue">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
-                        </svg>
-                    </div>
-                    <span class="app-name">Mail</span>
-                </div>
-                <div class="app-item" onclick="openApp('Calendar')">
-                    <div class="app-icon white">
-                        <svg viewBox="0 0 24 24" style="fill: #FF3B30;">
-                            <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
-                        </svg>
-                    </div>
-                    <span class="app-name">Calendar</span>
-                </div>
-                <div class="app-item" onclick="openApp('Photos')">
-                    <div class="app-icon" style="background: white;">
-                        <img src="https://image.qwenlm.ai/public_source/a83fe88b-0c37-4ecb-ad7c-84df1e249377/1ca223a80-ac72-4809-b2c4-a3d7ec873032.png" style="clip-path: inset(50% 75% 50% 25%); width: 200%; height: 200%; position: absolute; left: -50%; top: -50%;" alt="">
-                        <svg viewBox="0 0 24 24" style="position: relative; z-index: 1;">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                        </svg>
-                    </div>
-                    <span class="app-name">Photos</span>
-                </div>
-                <div class="app-item" onclick="openApp('Camera')">
-                    <div class="app-icon gray">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                        </svg>
-                    </div>
-                    <span class="app-name">Camera</span>
-                </div>
-                <div class="app-item" onclick="openApp('Maps')">
-                    <div class="app-icon" style="background: linear-gradient(180deg, #34C759 0%, #28A745 100%);">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/>
-                        </svg>
-                    </div>
-                    <span class="app-name">Maps</span>
-                </div>
-                <div class="app-item" onclick="openApp('Weather')">
-                    <div class="app-icon blue">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1z"/>
-                        </svg>
-                    </div>
-                    <span class="app-name">Weather</span>
-                </div>
-                <div class="app-item" onclick="openApp('Clock')">
-                    <div class="app-icon black">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
-                        </svg>
-                    </div>
-                    <span class="app-name">Clock</span>
-                </div>
-                <div class="app-item" onclick="openApp('Notes')">
-                    <div class="app-icon" style="background: linear-gradient(180deg, #FFCC00 0%, #FF9500 100%);">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M3 18h12v-2H3v2zM3 6v2h18V6H3zm0 7h18v-2H3v2z"/>
-                        </svg>
-                    </div>
-                    <span class="app-name">Notes</span>
-                </div>
-                <div class="app-item" onclick="openApp('Settings')">
-                    <div class="app-icon gray">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
-                        </svg>
-                    </div>
-                    <span class="app-name">Settings</span>
-                </div>
-                <div class="app-item" onclick="openApp('App Store')">
-                    <div class="app-icon blue">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-.8 1.94-.8s.16 1.54-.77 2.4c-.86.8-2.01.75-2.01.75s-.17-1.51.84-2.35z"/>
-                        </svg>
-                    </div>
-                    <span class="app-name">App Store</span>
-                </div>
-                <div class="app-item" onclick="openApp('Messages')">
-                    <div class="app-icon green">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
-                        </svg>
-                    </div>
-                    <span class="app-name">Messages</span>
-                    <div class="app-badge">3</div>
-                </div>
-                <div class="app-item" onclick="openApp('Phone')">
-                    <div class="app-icon green">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
-                        </svg>
-                    </div>
-                    <span class="app-name">Phone</span>
-                </div>
-                <div class="app-item" onclick="openApp('Safari')">
-                    <div class="app-icon" style="background: white;">
-                        <svg viewBox="0 0 24 24" style="fill: #007AFF;">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
-                        </svg>
-                    </div>
-                    <span class="app-name">Safari</span>
-                </div>
-                <div class="app-item" onclick="openApp('Music')">
-                    <div class="app-icon" style="background: linear-gradient(180deg, #FF2D55 0%, #FF3B30 100%);">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
-                        </svg>
-                    </div>
-                    <span class="app-name">Music</span>
-                </div>
-            </div>
-
-            <div class="page-dots">
-                <div class="page-dot active"></div>
-                <div class="page-dot"></div>
-                <div class="page-dot"></div>
-            </div>
-
-            <div class="dock">
-                <div class="app-item" onclick="openApp('Phone')">
-                    <div class="app-icon green">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
-                        </svg>
-                    </div>
-                </div>
-                <div class="app-item" onclick="openApp('Safari')">
-                    <div class="app-icon" style="background: white;">
-                        <svg viewBox="0 0 24 24" style="fill: #007AFF;">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93z"/>
-                        </svg>
-                    </div>
-                </div>
-                <div class="app-item" onclick="openApp('Messages')">
-                    <div class="app-icon green">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
-                        </svg>
-                    </div>
-                    <div class="app-badge">3</div>
-                </div>
-                <div class="app-item" onclick="openApp('Music')">
-                    <div class="app-icon" style="background: linear-gradient(180deg, #FF2D55 0%, #FF3B30 100%);">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
-                        </svg>
-                    </div>
-                </div>
-            </div>
-
-            <div class="home-indicator"></div>
         </div>
     </div>
 
     <script>
-        function updateTime() {
-            const now = new Date();
-            const hours = now.getHours();
-            const minutes = now.getMinutes().toString().padStart(2, '0');
-            document.getElementById('currentTime').textContent = `${hours}:${minutes}`;
-            
-            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-            document.getElementById('weekday').textContent = days[now.getDay()];
-            document.getElementById('dayNumber').textContent = now.getDate();
-        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabsContainer = document.querySelector('.tabs');
+            const newTabBtn = document.querySelector('.new-tab-btn');
+            const urlInput = document.getElementById('url-input');
+            const searchInput = document.getElementById('search-input');
+            const searchBtn = document.getElementById('search-btn');
+            const webView = document.getElementById('web-view');
+            const homePage = document.getElementById('home-page');
+            const webViewContainer = document.getElementById('web-view-container');
+            const loader = document.getElementById('loader');
+            const fallback = document.getElementById('fallback');
+            const openExternal = document.getElementById('open-external');
+            const backBtn = document.getElementById('back-btn');
+            const forwardBtn = document.getElementById('forward-btn');
+            const refreshBtn = document.getElementById('refresh-btn');
 
-        function openApp(appName) {
-            const notification = document.getElementById('notification');
-            notification.classList.remove('show');
-            
-            setTimeout(() => {
-                alert(`Opening ${appName}...`);
-            }, 150);
-        }
+            let tabs = [{ id: 1, url: 'minhlords://home', title: 'Minhlords Home', active: true }];
+            let tabCounter = 1;
+            let iframeBlocked = false;
 
-        document.getElementById('dynamicIsland').addEventListener('click', function() {
-            this.classList.toggle('expanded');
-        });
-
-        document.querySelector('.search-bar').addEventListener('click', function() {
-            const query = prompt('Search iOS 28...');
-            if (query) {
-                alert(`Searching for: ${query}`);
+            function renderTabs() {
+                tabsContainer.innerHTML = '';
+                tabs.forEach(tab => {
+                    const el = document.createElement('div');
+                    el.className = `tab ${tab.active ? 'active' : ''}`;
+                    el.textContent = tab.title;
+                    el.onclick = () => switchTab(tab.id);
+                    tabsContainer.appendChild(el);
+                });
+                tabsContainer.appendChild(newTabBtn);
             }
-        });
 
-        document.getElementById('notification').addEventListener('click', function() {
-            this.classList.remove('show');
-            alert('Opening Messages...');
-        });
+            function switchTab(id) {
+                tabs.forEach(t => t.active = (t.id === id));
+                const activeTab = tabs.find(t => t.active);
+                renderTabs();
+                updateUI(activeTab);
+            }
 
-        setInterval(updateTime, 1000);
-        updateTime();
+            function updateUI(tab) {
+                if (tab.url === 'minhlords://home') {
+                    homePage.classList.add('active');
+                    webViewContainer.classList.remove('active');
+                    urlInput.value = '';
+                    backBtn.disabled = true;
+                    forwardBtn.disabled = true;
+                } else {
+                    homePage.classList.remove('active');
+                    webViewContainer.classList.add('active');
+                    urlInput.value = tab.url;
+                    loadURL(tab.url);
+                    backBtn.disabled = false;
+                    forwardBtn.disabled = true;
+                }
+            }
 
-        setTimeout(() => {
-            document.getElementById('notification').classList.add('show');
-        }, 2000);
+            function loadURL(url) {
+                loader.style.display = 'block';
+                fallback.style.display = 'none';
+                iframeBlocked = false;
+                openExternal.href = url;
 
-        const appItems = document.querySelectorAll('.app-item');
-        appItems.forEach(item => {
-            item.addEventListener('touchstart', function() {
-                this.style.transform = 'scale(0.95)';
-            });
-            item.addEventListener('touchend', function() {
-                this.style.transform = 'scale(1)';
-            });
+                webView.src = url;
+                webView.onload = () => {
+                    loader.style.display = 'none';
+                    try {
+                        // Cross-origin check
+                        if (webView.contentWindow.document && webView.contentWindow.document.domain) {
+                            iframeBlocked = false;
+                        }
+                    } catch (e) {
+                        iframeBlocked = true;
+                    }
+                    if (iframeBlocked) {
+                        fallback.style.display = 'block';
+                    }
+                };
+            }
+
+            function createTab(url = 'minhlords://home') {
+                tabCounter++;
+                const newTab = {
+                    id: tabCounter,
+                    url,
+                    title: url === 'minhlords://home' ? 'Minhlords Home' : (url.startsWith('http') ? new URL(url).hostname : url),
+                    active: false
+                };
+                tabs.forEach(t => t.active = false);
+                newTab.active = true;
+                tabs.push(newTab);
+                renderTabs();
+                updateUI(newTab);
+            }
+
+            function navigateTo(input) {
+                let url = input.trim();
+                if (!url) return;
+
+                if (!url.startsWith('http') && !url.includes('://')) {
+                    // Check if it looks like a URL
+                    if (url.includes('.') && !url.includes(' ')) {
+                        url = 'https://' + url;
+                    } else {
+                        // Treat as search
+                        url = `https://www.google.com/search?q=${encodeURIComponent(url)}`;
+                    }
+                }
+
+                const activeTab = tabs.find(t => t.active);
+                activeTab.url = url;
+                activeTab.title = url.startsWith('https://www.google.com') ? `Search: ${input.trim()}` : new URL(url).hostname;
+                renderTabs();
+                updateUI(activeTab);
+            }
+
+            // Event Listeners
+            newTabBtn.onclick = () => createTab();
+            urlInput.addEventListener('keypress', e => { if (e.key === 'Enter') navigateTo(urlInput.value); });
+            searchInput.addEventListener('keypress', e => { if (e.key === 'Enter') navigateTo(searchInput.value); });
+            searchBtn.onclick = () => navigateTo(searchInput.value);
+
+            backBtn.onclick = () => {
+                if (!iframeBlocked) webView.contentWindow?.history?.back();
+                else alert('Back navigation restricted for security.');
+            };
+            forwardBtn.onclick = () => {
+                if (!iframeBlocked) webView.contentWindow?.history?.forward();
+                else alert('Forward navigation restricted for security.');
+            };
+            refreshBtn.onclick = () => {
+                if (webView.classList.contains('active')) {
+                    loader.style.display = 'block';
+                    webView.src = webView.src;
+                }
+            };
+
+            renderTabs();
+            updateUI(tabs[0]);
         });
     </script>
 </body>
 </html>
-
