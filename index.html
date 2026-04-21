@@ -1,417 +1,746 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minhlords Browser & Search</title>
+    <title>Trình Duyệt - Trang chủ</title>
     <style>
-        :root {
-            --bg: #f5f5f5;
-            --surface: #ffffff;
-            --border: #e0e0e0;
-            --primary: #4285f4;
-            --primary-hover: #3367d6;
-            --text: #202124;
-            --text-secondary: #5f6368;
-            --tab-bg: #e8e8e8;
-            --tab-active: #ffffff;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .browser-container {
-            width: 95vw;
-            height: 90vh;
-            background: var(--surface);
-            border-radius: 12px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #202124;
+            color: #e8eaed;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
         }
 
-        /* Top Bar */
+        /* ===== TOP BAR ===== */
         .top-bar {
             display: flex;
+            justify-content: flex-end;
             align-items: center;
-            background: var(--tab-bg);
-            padding: 8px 12px;
-            gap: 10px;
-            border-bottom: 1px solid var(--border);
+            padding: 10px 16px;
+            gap: 12px;
         }
 
-        .tabs {
+        .top-bar a {
+            color: #e8eaed;
+            text-decoration: none;
+            font-size: 13px;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .top-bar a:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .top-bar .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #8ab4f8;
             display: flex;
             align-items: center;
-            gap: 4px;
-            flex: 1;
-            overflow-x: auto;
-        }
-
-        .tab {
-            background: var(--surface);
-            padding: 6px 12px;
-            border-radius: 8px 8px 0 0;
-            font-size: 13px;
-            cursor: pointer;
-            max-width: 180px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            position: relative;
-        }
-
-        .tab.active {
-            background: var(--tab-active);
-            font-weight: 500;
-            box-shadow: 0 -2px 0 var(--primary);
-        }
-
-        .new-tab-btn {
-            background: transparent;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-            padding: 4px 8px;
-            border-radius: 50%;
-            color: var(--text-secondary);
-        }
-
-        .new-tab-btn:hover { background: #d0d0d0; }
-
-        .controls { display: flex; gap: 6px; }
-        .controls button {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 4px 10px;
-            cursor: pointer;
-            font-size: 16px;
-            color: var(--text-secondary);
-        }
-        .controls button:hover { background: #f0f0f0; }
-        .controls button:disabled { opacity: 0.4; cursor: not-allowed; }
-
-        /* Address Bar */
-        .address-bar {
-            padding: 8px 12px;
-            background: #f8f9fa;
-            border-bottom: 1px solid var(--border);
-        }
-
-        #url-input {
-            width: 100%;
-            padding: 9px 14px;
-            border-radius: 22px;
-            border: 1px solid var(--border);
+            justify-content: center;
             font-size: 14px;
-            outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            font-weight: 600;
+            color: #202124;
+            cursor: pointer;
         }
 
-        #url-input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
-        }
-
-        /* Content Area */
-        .content-area { flex: 1; position: relative; overflow: hidden; }
-        .page { display: none; width: 100%; height: 100%; }
-        .page.active { display: block; }
-
-        #home-page {
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 40px 20px;
-            background: var(--surface);
-            height: 100%;
+            padding-top: 40px;
         }
 
+        /* ===== LOGO ===== */
         .logo {
-            font-size: 52px;
+            font-size: 80px;
             font-weight: 700;
-            letter-spacing: -1px;
-            background: linear-gradient(90deg, #4285f4, #34a853, #fbbc05, #ea4335);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            margin-bottom: 8px;
+            margin-bottom: 30px;
+            user-select: none;
+            letter-spacing: -2px;
         }
 
-        .tagline {
-            color: var(--text-secondary);
-            margin-bottom: 30px;
-            font-size: 16px;
+        .logo .l-blue    { color: #4285F4; }
+        .logo .l-red      { color: #EA4335; }
+        .logo .l-yellow   { color: #FBBC05; }
+        .logo .l-green    { color: #34A853; }
+
+        /* ===== SEARCH BOX ===== */
+        .search-container {
+            width: 100%;
+            max-width: 620px;
+            padding: 0 20px;
         }
 
         .search-box {
             display: flex;
-            gap: 8px;
-            width: 100%;
-            max-width: 580px;
+            align-items: center;
+            background: #303134;
+            border: 1px solid #5f6368;
+            border-radius: 24px;
+            padding: 0 16px;
+            height: 46px;
+            transition: background 0.2s, box-shadow 0.2s, border-color 0.2s;
         }
 
-        #search-input {
+        .search-box:hover,
+        .search-box:focus-within {
+            background: #3c4043;
+            border-color: #8ab4f8;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        }
+
+        .search-box svg {
+            flex-shrink: 0;
+            margin-right: 14px;
+        }
+
+        .search-box input {
             flex: 1;
-            padding: 12px 16px;
-            border-radius: 24px;
-            border: 1px solid var(--border);
-            font-size: 15px;
-            outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-
-        #search-input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
-        }
-
-        #search-btn {
-            background: var(--primary);
-            color: #fff;
+            background: none;
             border: none;
-            padding: 12px 20px;
-            border-radius: 24px;
+            outline: none;
+            color: #e8eaed;
+            font-size: 16px;
+            line-height: 46px;
+        }
+
+        .search-box input::placeholder {
+            color: #9aa0a6;
+        }
+
+        .search-box .mic-btn,
+        .search-box .lens-btn {
+            background: none;
+            border: none;
             cursor: pointer;
-            font-weight: 500;
+            padding: 6px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            margin-left: 4px;
+        }
+
+        .search-box .mic-btn:hover,
+        .search-box .lens-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* ===== BUTTONS ===== */
+        .search-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 28px;
+            justify-content: center;
+        }
+
+        .search-buttons button {
+            background: #303134;
+            color: #e8eaed;
+            border: 1px solid #5f6368;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+        }
+
+        .search-buttons button:hover {
+            background: #3c4043;
+            border-color: #8ab4f8;
+        }
+
+        /* ===== SHORTCUTS ===== */
+        .shortcuts {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            margin-top: 40px;
+            max-width: 620px;
+            width: 100%;
+            padding: 0 20px;
+        }
+
+        .shortcut-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 16px 8px;
+            border-radius: 12px;
+            transition: background 0.2s;
+            text-decoration: none;
+        }
+
+        .shortcut-item:hover {
+            background: rgba(255,255,255,0.08);
+        }
+
+        .shortcut-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: #303134;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            border: 1px solid #5f6368;
+            transition: border-color 0.2s;
+        }
+
+        .shortcut-item:hover .shortcut-icon {
+            border-color: #8ab4f8;
+        }
+
+        .shortcut-label {
+            font-size: 12px;
+            color: #bdc1c6;
+            text-align: center;
+            max-width: 70px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            background: #171717;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .footer a {
+            color: #9aa0a6;
+            text-decoration: none;
+            font-size: 13px;
+            padding: 4px 8px;
+            border-radius: 4px;
             transition: background 0.2s;
         }
 
-        #search-btn:hover { background: var(--primary-hover); }
-
-        iframe {
-            border: none;
-            background: var(--surface);
+        .footer a:hover {
+            background: rgba(255,255,255,0.08);
         }
 
-        .loader {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 24px;
-            height: 24px;
-            border: 3px solid #e0e0e0;
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+        .footer-left, .footer-right {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        /* ===== SEARCH RESULTS ===== */
+        .results-overlay {
             display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #202124;
+            z-index: 100;
+            flex-direction: column;
         }
 
-        @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+        .results-overlay.active {
+            display: flex;
+        }
 
-        .fallback-msg {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            color: var(--text-secondary);
-            max-width: 400px;
+        .results-header {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            border-bottom: 1px solid #3c4043;
+            gap: 20px;
+        }
+
+        .results-header .mini-logo {
+            font-size: 28px;
+            font-weight: 700;
+            cursor: pointer;
+            letter-spacing: -1px;
+        }
+
+        .results-header .search-box {
+            max-width: 690px;
+            flex: 1;
+        }
+
+        .results-tabs {
+            display: flex;
+            gap: 4px;
+            padding: 0 20px 0 180px;
+            border-bottom: 1px solid #3c4043;
+        }
+
+        .results-tabs span {
+            padding: 12px 16px;
+            font-size: 13px;
+            color: #9aa0a6;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: color 0.2s;
+        }
+
+        .results-tabs span.active {
+            color: #8ab4f8;
+            border-bottom-color: #8ab4f8;
+        }
+
+        .results-tabs span:hover {
+            color: #e8eaed;
+        }
+
+        .results-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 20px 20px 180px;
+        }
+
+        .result-item {
+            max-width: 650px;
+            margin-bottom: 28px;
+        }
+
+        .result-item .result-url {
+            font-size: 13px;
+            color: #9aa0a6;
+            margin-bottom: 4px;
+        }
+
+        .result-item .result-title {
+            font-size: 20px;
+            color: #8ab4f8;
+            cursor: pointer;
+            margin-bottom: 6px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .result-item .result-title:hover {
+            text-decoration: underline;
+        }
+
+        .result-item .result-desc {
+            font-size: 14px;
+            color: #bdc1c6;
             line-height: 1.5;
-            display: none;
         }
 
-        @media (max-width: 768px) {
-            .browser-container { width: 100vw; height: 100vh; border-radius: 0; }
-            .logo { font-size: 40px; }
-            .search-box { flex-direction: column; }
+        .close-results {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #9aa0a6;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
         }
+
+        .close-results:hover {
+            background: rgba(255,255,255,0.1);
+            color: #e8eaed;
+        }
+
+        /* ===== SUGGESTIONS DROPDOWN ===== */
+        .suggestions {
+            display: none;
+            position: absolute;
+            top: 46px;
+            left: 0;
+            right: 0;
+            background: #303134;
+            border-radius: 0 0 24px 24px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            z-index: 50;
+        }
+
+        .suggestions.active {
+            display: block;
+        }
+
+        .suggestion-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            gap: 14px;
+            cursor: pointer;
+            font-size: 15px;
+            color: #e8eaed;
+            transition: background 0.15s;
+        }
+
+        .suggestion-item:hover {
+            background: rgba(255,255,255,0.08);
+        }
+
+        .suggestion-item svg {
+            flex-shrink: 0;
+        }
+
+        .search-wrapper {
+            position: relative;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .logo { font-size: 52px; }
+            .shortcuts { grid-template-columns: repeat(3, 1fr); }
+            .results-body { padding-left: 20px; }
+            .results-tabs { padding-left: 20px; }
+        }
+
+        @media (max-width: 480px) {
+            .shortcuts { grid-template-columns: repeat(2, 1fr); }
+            .search-buttons { flex-direction: column; align-items: center; }
+        }
+
+        /* ===== ANIMATION ===== */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .main-content > * {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .main-content > *:nth-child(2) { animation-delay: 0.1s; }
+        .main-content > *:nth-child(3) { animation-delay: 0.2s; }
+        .main-content > *:nth-child(4) { animation-delay: 0.3s; }
     </style>
 </head>
 <body>
-    <div class="browser-container">
-        <!-- Top Bar -->
-        <div class="top-bar">
-            <div class="tabs">
-                <div class="tab active" data-url="minhlords://home">Minhlords Home</div>
-                <button class="new-tab-btn" title="New Tab">+</button>
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <a href="#">Gmail</a>
+        <a href="#">Hình ảnh</a>
+        <div class="avatar" title="Tài khoản">N</div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main-content">
+        <!-- LOGO -->
+        <div class="logo">
+            <span class="l-blue">G</span><span class="l-red">o</span><span class="l-yellow">o</span><span class="l-blue">g</span><span class="l-green">l</span><span class="l-red">e</span>
+        </div>
+
+        <!-- SEARCH -->
+        <div class="search-container">
+            <div class="search-wrapper">
+                <div class="search-box" id="searchBox">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15z" stroke="#9aa0a6" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    <input type="text" id="searchInput" placeholder="Tìm kiếm trên Google hoặc nhập URL" autocomplete="off" />
+                    <button class="mic-btn" title="Tìm kiếm bằng giọng nói">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <rect x="9" y="2" width="6" height="12" rx="3" fill="#4285F4"/>
+                            <path d="M5 11a7 7 0 0 0 14 0" stroke="#EA4335" stroke-width="2" fill="none"/>
+                            <line x1="12" y1="18" x2="12" y2="22" stroke="#34A853" stroke-width="2"/>
+                            <line x1="8" y1="22" x2="16" y2="22" stroke="#FBBC05" stroke-width="2"/>
+                        </svg>
+                    </button>
+                    <button class="lens-btn" title="Tìm kiếm bằng hình ảnh">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="3" fill="#4285F4"/>
+                            <circle cx="12" cy="12" r="7" stroke="#EA4335" stroke-width="2" fill="none"/>
+                            <circle cx="12" cy="12" r="10" stroke="#FBBC05" stroke-width="2" fill="none" stroke-dasharray="4 3"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- SUGGESTIONS -->
+                <div class="suggestions" id="suggestions"></div>
             </div>
-            <div class="controls">
-                <button id="back-btn" title="Back">←</button>
-                <button id="forward-btn" title="Forward">→</button>
-                <button id="refresh-btn" title="Refresh">↻</button>
+
+            <!-- BUTTONS -->
+            <div class="search-buttons">
+                <button id="btnSearch">Tìm kiếm với Google</button>
+                <button id="btnLucky">Tôi cảm thấy may mắn</button>
             </div>
         </div>
 
-        <!-- Address Bar -->
-        <div class="address-bar">
-            <input type="text" id="url-input" placeholder="Search or enter web address (e.g., example.com)">
-        </div>
-
-        <!-- Content Area -->
-        <div class="content-area">
-            <div id="home-page" class="page active">
-                <h1 class="logo">Minhlords</h1>
-                <p class="tagline">Fast. Private. Yours.</p>
-                <div class="search-box">
-                    <input type="text" id="search-input" placeholder="Search the web...">
-                    <button id="search-btn">Search</button>
-                </div>
-            </div>
-            <div id="web-view-container" class="page">
-                <iframe id="web-view" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-top-navigation-by-user-activation"></iframe>
-                <div class="loader" id="loader"></div>
-                <div class="fallback-msg" id="fallback">
-                    ⚠️ This site blocks embedding for security reasons.<br>
-                    <a href="#" id="open-external" target="_blank" style="color: var(--primary);">Open in new tab</a>
-                </div>
-            </div>
+        <!-- SHORTCUTS -->
+        <div class="shortcuts" id="shortcuts">
+            <a class="shortcut-item" href="https://www.youtube.com" target="_blank">
+                <div class="shortcut-icon" style="background:#ff0000;border-color:#ff0000;">▶</div>
+                <span class="shortcut-label">YouTube</span>
+            </a>
+            <a class="shortcut-item" href="https://mail.google.com" target="_blank">
+                <div class="shortcut-icon" style="background:#EA4335;border-color:#EA4335;">✉</div>
+                <span class="shortcut-label">Gmail</span>
+            </a>
+            <a class="shortcut-item" href="https://maps.google.com" target="_blank">
+                <div class="shortcut-icon" style="background:#34A853;border-color:#34A853;">🗺</div>
+                <span class="shortcut-label">Google Maps</span>
+            </a>
+            <a class="shortcut-item" href="https://drive.google.com" target="_blank">
+                <div class="shortcut-icon" style="background:#FBBC05;border-color:#FBBC05;">☁</div>
+                <span class="shortcut-label">Google Drive</span>
+            </a>
+            <a class="shortcut-item" href="https://translate.google.com" target="_blank">
+                <div class="shortcut-icon" style="background:#4285F4;border-color:#4285F4;">文</div>
+                <span class="shortcut-label">Google Dịch</span>
+            </a>
+            <a class="shortcut-item" href="https://news.google.com" target="_blank">
+                <div class="shortcut-icon">📰</div>
+                <span class="shortcut-label">Tin tức</span>
+            </a>
+            <a class="shortcut-item" href="https://shopping.google.com" target="_blank">
+                <div class="shortcut-icon">🛒</div>
+                <span class="shortcut-label">Mua sắm</span>
+            </a>
+            <a class="shortcut-item" href="https://play.google.com" target="_blank">
+                <div class="shortcut-icon" style="background:#34A853;border-color:#34A853;">▶</div>
+                <span class="shortcut-label">Google Play</span>
+            </a>
+            <a class="shortcut-item" href="https://calendar.google.com" target="_blank">
+                <div class="shortcut-icon">📅</div>
+                <span class="shortcut-label">Lịch</span>
+            </a>
+            <a class="shortcut-item" href="https://photos.google.com" target="_blank">
+                <div class="shortcut-icon">📷</div>
+                <span class="shortcut-label">Ảnh</span>
+            </a>
         </div>
     </div>
 
+    <!-- FOOTER -->
+    <div class="footer">
+        <div class="footer-left">
+            <a href="#">Giới thiệu</a>
+            <a href="#">Quảng cáo</a>
+            <a href="#">Doanh nghiệp</a>
+            <a href="#">Cách Tìm kiếm hoạt động</a>
+        </div>
+        <div class="footer-right">
+            <a href="#">Quyền riêng tư</a>
+            <a href="#">Điều khoản</a>
+            <a href="#">Cài đặt</a>
+        </div>
+    </div>
+
+    <!-- RESULTS OVERLAY -->
+    <div class="results-overlay" id="resultsOverlay">
+        <div class="results-header">
+            <div class="mini-logo" onclick="closeResults()">
+                <span class="l-blue">G</span><span class="l-red">o</span><span class="l-yellow">o</span><span class="l-blue">g</span><span class="l-green">l</span><span class="l-red">e</span>
+            </div>
+            <div class="search-box" style="max-width:690px;flex:1;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15z" stroke="#9aa0a6" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <input type="text" id="resultsSearchInput" autocomplete="off" />
+            </div>
+        </div>
+        <div class="results-tabs">
+            <span class="active">Tất cả</span>
+            <span>Hình ảnh</span>
+            <span>Tin tức</span>
+            <span>Video</span>
+            <span>Maps</span>
+            <span>Thêm</span>
+        </div>
+        <div class="results-body" id="resultsBody"></div>
+        <button class="close-results" onclick="closeResults()">✕</button>
+    </div>
+
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const tabsContainer = document.querySelector('.tabs');
-            const newTabBtn = document.querySelector('.new-tab-btn');
-            const urlInput = document.getElementById('url-input');
-            const searchInput = document.getElementById('search-input');
-            const searchBtn = document.getElementById('search-btn');
-            const webView = document.getElementById('web-view');
-            const homePage = document.getElementById('home-page');
-            const webViewContainer = document.getElementById('web-view-container');
-            const loader = document.getElementById('loader');
-            const fallback = document.getElementById('fallback');
-            const openExternal = document.getElementById('open-external');
-            const backBtn = document.getElementById('back-btn');
-            const forwardBtn = document.getElementById('forward-btn');
-            const refreshBtn = document.getElementById('refresh-btn');
+        const searchInput     = document.getElementById('searchInput');
+        const resultsInput    = document.getElementById('resultsSearchInput');
+        const suggestionsEl   = document.getElementById('suggestions');
+        const resultsOverlay  = document.getElementById('resultsOverlay');
+        const resultsBody     = document.getElementById('resultsBody');
 
-            let tabs = [{ id: 1, url: 'minhlords://home', title: 'Minhlords Home', active: true }];
-            let tabCounter = 1;
-            let iframeBlocked = false;
+        // ===== SUGGESTIONS =====
+        const suggestionData = {
+            'google': ['google dịch', 'google drive', 'google maps', 'google translate', 'google news'],
+            'youtube': ['youtube music', 'youtube to mp3', 'youtube downloader'],
+            'facebook': ['facebook login', 'facebook marketplace', 'facebook video downloader'],
+            'weather': ['thời tiết hôm nay', 'thời tiết hà nội', 'thời tiết tp hcm'],
+            'news': ['tin tức mới nhất', 'tin tức 24h', 'tin tức việt nam'],
+            'translate': ['translate vietnamese to english', 'translate english to vietnamese'],
+            'gmail': ['gmail login', 'gmail.com', 'gmail app'],
+            'maps': ['google maps vietnam', 'maps directions', 'maps satellite view'],
+        };
 
-            function renderTabs() {
-                tabsContainer.innerHTML = '';
-                tabs.forEach(tab => {
-                    const el = document.createElement('div');
-                    el.className = `tab ${tab.active ? 'active' : ''}`;
-                    el.textContent = tab.title;
-                    el.onclick = () => switchTab(tab.id);
-                    tabsContainer.appendChild(el);
+        searchInput.addEventListener('input', function() {
+            const val = this.value.toLowerCase().trim();
+            suggestionsEl.innerHTML = '';
+
+            if (!val) {
+                suggestionsEl.classList.remove('active');
+                return;
+            }
+
+            let matches = [];
+
+            // Check predefined suggestions
+            for (const [key, suggestions] of Object.entries(suggestionData)) {
+                if (key.startsWith(val)) {
+                    matches.push(...suggestions);
+                }
+            }
+
+            // Generic fallback
+            if (matches.length === 0) {
+                matches = [
+                    val,
+                    val + ' là gì',
+                    val + ' việt nam',
+                    val + ' 2026',
+                    val + ' online'
+                ];
+            }
+
+            matches.slice(0, 8).forEach(text => {
+                const div = document.createElement('div');
+                div.className = 'suggestion-item';
+                div.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15z" stroke="#9aa0a6" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    <span>${text}</span>
+                `;
+                div.addEventListener('click', () => {
+                    searchInput.value = text;
+                    suggestionsEl.classList.remove('active');
+                    performSearch(text);
                 });
-                tabsContainer.appendChild(newTabBtn);
-            }
+                suggestionsEl.appendChild(div);
+            });
 
-            function switchTab(id) {
-                tabs.forEach(t => t.active = (t.id === id));
-                const activeTab = tabs.find(t => t.active);
-                renderTabs();
-                updateUI(activeTab);
-            }
-
-            function updateUI(tab) {
-                if (tab.url === 'minhlords://home') {
-                    homePage.classList.add('active');
-                    webViewContainer.classList.remove('active');
-                    urlInput.value = '';
-                    backBtn.disabled = true;
-                    forwardBtn.disabled = true;
-                } else {
-                    homePage.classList.remove('active');
-                    webViewContainer.classList.add('active');
-                    urlInput.value = tab.url;
-                    loadURL(tab.url);
-                    backBtn.disabled = false;
-                    forwardBtn.disabled = true;
-                }
-            }
-
-            function loadURL(url) {
-                loader.style.display = 'block';
-                fallback.style.display = 'none';
-                iframeBlocked = false;
-                openExternal.href = url;
-
-                webView.src = url;
-                webView.onload = () => {
-                    loader.style.display = 'none';
-                    try {
-                        // Cross-origin check
-                        if (webView.contentWindow.document && webView.contentWindow.document.domain) {
-                            iframeBlocked = false;
-                        }
-                    } catch (e) {
-                        iframeBlocked = true;
-                    }
-                    if (iframeBlocked) {
-                        fallback.style.display = 'block';
-                    }
-                };
-            }
-
-            function createTab(url = 'minhlords://home') {
-                tabCounter++;
-                const newTab = {
-                    id: tabCounter,
-                    url,
-                    title: url === 'minhlords://home' ? 'Minhlords Home' : (url.startsWith('http') ? new URL(url).hostname : url),
-                    active: false
-                };
-                tabs.forEach(t => t.active = false);
-                newTab.active = true;
-                tabs.push(newTab);
-                renderTabs();
-                updateUI(newTab);
-            }
-
-            function navigateTo(input) {
-                let url = input.trim();
-                if (!url) return;
-
-                if (!url.startsWith('http') && !url.includes('://')) {
-                    // Check if it looks like a URL
-                    if (url.includes('.') && !url.includes(' ')) {
-                        url = 'https://' + url;
-                    } else {
-                        // Treat as search
-                        url = `https://www.google.com/search?q=${encodeURIComponent(url)}`;
-                    }
-                }
-
-                const activeTab = tabs.find(t => t.active);
-                activeTab.url = url;
-                activeTab.title = url.startsWith('https://www.google.com') ? `Search: ${input.trim()}` : new URL(url).hostname;
-                renderTabs();
-                updateUI(activeTab);
-            }
-
-            // Event Listeners
-            newTabBtn.onclick = () => createTab();
-            urlInput.addEventListener('keypress', e => { if (e.key === 'Enter') navigateTo(urlInput.value); });
-            searchInput.addEventListener('keypress', e => { if (e.key === 'Enter') navigateTo(searchInput.value); });
-            searchBtn.onclick = () => navigateTo(searchInput.value);
-
-            backBtn.onclick = () => {
-                if (!iframeBlocked) webView.contentWindow?.history?.back();
-                else alert('Back navigation restricted for security.');
-            };
-            forwardBtn.onclick = () => {
-                if (!iframeBlocked) webView.contentWindow?.history?.forward();
-                else alert('Forward navigation restricted for security.');
-            };
-            refreshBtn.onclick = () => {
-                if (webView.classList.contains('active')) {
-                    loader.style.display = 'block';
-                    webView.src = webView.src;
-                }
-            };
-
-            renderTabs();
-            updateUI(tabs[0]);
+            suggestionsEl.classList.add('active');
         });
+
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                suggestionsEl.classList.remove('active');
+                performSearch(this.value);
+            }
+        });
+
+        // Close suggestions on outside click
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.search-wrapper')) {
+                suggestionsEl.classList.remove('active');
+            }
+        });
+
+        // ===== SEARCH =====
+        function performSearch(query) {
+            if (!query.trim()) return;
+
+            resultsInput.value = query;
+
+            // Generate fake results
+            resultsBody.innerHTML = generateResults(query);
+
+            resultsOverlay.classList.add('active');
+        }
+
+        function generateResults(query) {
+            const q = query.trim();
+            const results = [
+                {
+                    url: `https://vi.wikipedia.org/wiki/${encodeURIComponent(q)}`,
+                    title: `${q} - Wikipedia tiếng Việt`,
+                    desc: `${q} là một chủ đề phổ biến được nhiều người quan tâm. Bài viết này cung cấp thông tin tổng quan và chi tiết về ${q}, bao gồm lịch sử, đặc điểm và các thông tin liên quan.`
+                },
+                {
+                    url: `https://www.google.com/search?q=${encodeURIComponent(q)}`,
+                    title: `${q} - Kết quả tìm kiếm hàng đầu`,
+                    desc: `Khám phá những thông tin mới nhất về ${q}. Cập nhật liên tục các tin tức, bài viết và tài liệu liên quan đến ${q} từ nhiều nguồn đáng tin cậy.`
+                },
+                {
+                    url: `https://news.google.com/search?q=${encodeURIComponent(q)}`,
+                    title: `Tin tức mới nhất về ${q}`,
+                    desc: `Tổng hợp tin tức mới nhất về ${q} trong ngày. Đọc các bài báo, phân tích và bình luận từ các chuyên gia về ${q} trên toàn thế giới.`
+                },
+                {
+                    url: `https://www.youtube.com/results?search_query=${encodeURIComponent(q)}`,
+                    title: `${q} - YouTube Videos`,
+                    desc: `Xem video về ${q} trên YouTube. Hàng ngàn video chất lượng cao, hướng dẫn, review và thảo luận về ${q} được cập nhật mỗi ngày.`
+                },
+                {
+                    url: `https://stackoverflow.com/search?q=${encodeURIComponent(q)}`,
+                    title: `${q} - Stack Overflow`,
+                    desc: `Tìm câu trả lời cho các câu hỏi liên quan đến ${q} trên Stack Overflow. Cộng đồng lập trình viên chia sẻ kinh nghiệm và giải pháp.`
+                },
+                {
+                    url: `https://reddit.com/search/?q=${encodeURIComponent(q)}`,
+                    title: `${q} - Reddit Discussions`,
+                    desc: `Tham gia thảo luận về ${q} trên Reddit. Đọc các bài đăng, bình luận và chia sẻ quan điểm của bạn về ${q} với cộng đồng.`
+                }
+            ];
+
+            let html = `<p style="color:#9aa0a6;font-size:14px;margin-bottom:20px;">Kết quả tìm kiếm cho "<strong style="color:#e8eaed;">${q}</strong>" — khoảng ${(Math.floor(Math.random()*900)+100).toLocaleString()},000,000 kết quả</p>`;
+
+            results.forEach(r => {
+                html += `
+                    <div class="result-item">
+                        <div class="result-url">${r.url}</div>
+                        <a class="result-title" href="${r.url}" target="_blank">${r.title}</a>
+                        <div class="result-desc">${r.desc}</div>
+                    </div>
+                `;
+            });
+
+            return html;
+        }
+
+        // ===== BUTTONS =====
+        document.getElementById('btnSearch').addEventListener('click', () => {
+            performSearch(searchInput.value);
+        });
+
+        document.getElementById('btnLucky').addEventListener('click', () => {
+            const q = searchInput.value.trim();
+            if (q) {
+                window.open(`https://www.google.com/search?q=${encodeURIComponent(q)}&btnI`, '_blank');
+            }
+        });
+
+        // ===== RESULTS SEARCH =====
+        resultsInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                performSearch(this.value);
+            }
+        });
+
+        function closeResults() {
+            resultsOverlay.classList.remove('active');
+            searchInput.value = '';
+            searchInput.focus();
+        }
+
+        // ===== FOCUS ON LOAD =====
+        searchInput.focus();
     </script>
+
 </body>
 </html>
