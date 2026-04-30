@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MINHLORDS - Minecraft Hub</title>
+  <meta name="description" content="MINHLORDS Minecraft Hub - Server, Mods, Resource Packs & Tutorials">
+  
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Exo+2:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"/>
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- Minecraft-specific styles -->
+  <style>
+    .mc-hero {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    
+    .mc-icon {
+      font-size: 4rem;
+      margin-bottom: 20px;
+      animation: bounce 2s infinite;
+    }
+    
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+    
+    .mc-section {
+      background: rgba(25, 25, 55, 0.6);
+      border-radius: 20px;
+      padding: 25px;
+      margin: 20px 0;
+      border: 1px solid rgba(57, 255, 20, 0.3);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .mc-section:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 40px rgba(57, 255, 20, 0.4);
+    }
+    
+    .mc-section h3 {
+      font-family: 'Orbitron', sans-serif;
+      color: #39ff14;
+      margin-bottom: 15px;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .mc-section p, .mc-section li {
+      color: #ddd;
+      line-height: 1.7;
+      font-size: 1.05rem;
+    }
+    
+    .mc-section ul {
+      padding-left: 20px;
+    }
+    
+    .mc-section li {
+      margin: 8px 0;
+    }
+    
+    .mc-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #39ff14, #00ff88);
+      color: #0a0a1a;
+      text-decoration: none;
+      border-radius: 12px;
+      font-weight: 700;
+      margin: 8px 4px;
+      transition: all 0.3s;
+    }
+    
+    .mc-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px rgba(57, 255, 20, 0.8);
+    }
+    
+    .mc-btn.secondary {
+      background: linear-gradient(135deg, #9d4edd, #6a0dad);
+      color: white;
+    }
+    
+    .mc-btn.secondary:hover {
+      box-shadow: 0 0 30px rgba(157, 78, 221, 0.8);
+    }
+    
+    .server-status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 15px 0;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+    }
+    
+    .status-dot {
+      width: 12px;
+      height: 12px;
+      background: #39ff14;
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.7; transform: scale(1.2); }
+    }
+    
+    .copy-ip {
+      background: rgba(57, 255, 20, 0.15);
+      border: 1px dashed #39ff14;
+      padding: 10px 15px;
+      border-radius: 8px;
+      font-family: monospace;
+      color: #39ff14;
+      cursor: pointer;
+      user-select: all;
+      transition: all 0.3s;
+    }
+    
+    .copy-ip:hover {
+      background: rgba(57, 255, 20, 0.3);
+    }
+    
+    .copy-ip.copied {
+      background: rgba(0, 242, 255, 0.3);
+      border-color: #00f2ff;
+      color: #00f2ff;
+    }
+    
+    .back-home {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #aaa;
+      text-decoration: none;
+      margin-bottom: 20px;
+      font-size: 1.1rem;
+      transition: color 0.3s;
+    }
+    
+    .back-home:hover {
+      color: #00f2ff;
+    }
+    
+    .version-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #ff66cc, #9d4edd);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-left: 10px;
+    }
+    
+    @media (max-width: 640px) {
+      .mc-section { padding: 20px 15px; }
+      .mc-btn { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="particles-js"></div>
+
+  <div class="container">
+    <div class="card">
+      
+      <a href="index.html" class="back-home fade-up">
+        <i class="fas fa-arrow-left"></i> Back to Home
+      </a>
+      
+      <div class="mc-hero fade-up fade-up-delay-1">
+        <div class="mc-icon">⛏️</div>
+        <h2 style="font-size: clamp(2rem, 6vw, 4rem); margin-bottom: 10px;">
+          Minecraft Hub <span class="version-badge">1.20.4</span>
+        </h2>
+        <p class="subtitle" style="margin-bottom: 20px;">
+          Everything you need for the ultimate Minecraft experience!
+        </p>
+      </div>
+
+      <!-- Server Section -->
+      <div class="mc-section fade-up fade-up-delay-2">
+        <h3><i class="fas fa-server"></i> Official Server</h3>
+        <p>Join our community server and play with friends! Survival, Creative, Minigames & more.</p>
+        
+        <div class="server-status">
+          <div class="status-dot"></div>
+          <span style="color: #39ff14; font-weight: 600;">Server Online</span>
+          <span style="color: #aaa; margin-left: auto;">👥 127/500 players</span>
+        </div>
+        
+        <p style="margin: 15px 0;"><strong>Server IP:</strong></p>
+        <div class="copy-ip" onclick="copyIP(this)" title="Click to copy">play.minhlords.net</div>
+        <p style="font-size: 0.9rem; color: #888; margin-top: 10px;">
+          <i class="fas fa-info-circle"></i> Supports Java Edition 1.16 - 1.20.4
+        </p>
+      </div>
+
+      <!-- Downloads Section -->
+      <div class="mc-section fade-up fade-up-delay-3">
+        <h3><i class="fas fa-download"></i> Downloads</h3>
+        <p>Get the best mods, resource packs, and tools curated by MINHLORDS:</p>
+        
+        <div style="margin: 15px 0;">
+          <a href="#" class="mc-btn"><i class="fas fa-cube"></i> OptiFine HD</a>
+          <a href="#" class="mc-btn secondary"><i class="fas fa-palette"></i> MINHLORDS RP</a>
+        </div>
+        <div>
+          <a href="#" class="mc-btn"><i class="fas fa-shield-alt"></i> Essential Mods Pack</a>
+          <a href="#" class="mc-btn secondary"><i class="fas fa-map"></i> Custom Maps</a>
+        </div>
+      </div>
+
+      <!-- Tutorials Section -->
+      <div class="mc-section fade-up fade-up-delay-4">
+        <h3><i class="fas fa-book"></i> Tutorials & Guides</h3>
+        <ul>
+          <li>🎯 <strong>Beginner's Guide:</strong> Start your adventure right</li>
+          <li>⚡ <strong>Redstone Basics:</strong> Build automatic farms & contraptions</li>
+          <li>🏰 <strong>Building Tips:</strong> Create epic structures like a pro</li>
+          <li>⚔️ <strong>PvP Mastery:</strong> Combat techniques & strategies</li>
+          <li>🌍 <strong>Server Rules:</strong> Keep the community fun for everyone</li>
+        </ul>
+        <a href="#" class="mc-btn" style="margin-top: 15px;">
+          <i class="fab fa-youtube"></i> Watch Video Tutorials
+        </a>
+      </div>
+
+      <!-- Community Section -->
+      <div class="mc-section fade-up fade-up-delay-5">
+        <h3><i class="fas fa-users"></i> Join the Community</h3>
+        <p>Connect with other players, share builds, and participate in events!</p>
+        
+        <div style="margin: 15px 0;">
+          <a href="https://discord.gg/minhlords" target="_blank" class="mc-btn secondary">
+            <i class="fab fa-discord"></i> Discord Server
+          </a>
+          <a href="#" class="mc-btn">
+            <i class="fas fa-newspaper"></i> Community Builds
+          </a>
+        </div>
+        
+        <p style="font-size: 0.95rem; color: #aaa;">
+          <i class="fas fa-gift"></i> Weekly events with exclusive rewards!
+        </p>
+      </div>
+
+      <footer class="fade-up fade-up-delay-6" style="margin-top: 30px; padding-top: 20px;">
+        © 2025 MINHLORDS • Minecraft is a trademark of Mojang Studios.<br>
+        Not affiliated with Mojang AB. • <a href="index.html">Back to Home</a>
+      </footer>
+      
+    </div>
+  </div>
+
+  <!-- Particles.js Library -->
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  
+  <!-- Custom JS -->
+  <script src="script.js"></script>
+  
+  <!-- Minecraft Page JS -->
+  <script>
+    // Re-initialize particles for this page
+    document.addEventListener('DOMContentLoaded', function() {
+      if (typeof particlesJS !== 'undefined') {
+        particlesJS("particles-js", {
+          "particles": {
+            "number": { "value": 90, "density": { "enable": true, "value_area": 800 } },
+            "color": { "value": ["#39ff14", "#00f2ff", "#9d4edd", "#ff0066"] },
+            "shape": { "type": ["circle", "square"], "polygon": { "nb_sides": 6 } },
+            "opacity": { "value": 0.6, "random": true },
+            "size": { "value": 3, "random": true },
+            "line_linked": { "enable": true, "distance": 140, "color": "#39ff14", "opacity": 0.2, "width": 1 },
+            "move": { "enable": true, "speed": 2.5, "direction": "none", "random": true, "straight": false }
+          },
+          "interactivity": {
+            "detect_on": "canvas",
+            "events": {
+              "onhover": { "enable": true, "mode": "repulse" },
+              "onclick": { "enable": true, "mode": "push" },
+              "resize": true
+            },
+            "modes": {
+              "repulse": { "distance": 100, "duration": 0.4 },
+              "push": { "particles_nb": 4 }
+            }
+          },
+          "retina_detect": true
+        });
+      }
+    });
+    
+    // Copy IP function
+    function copyIP(element) {
+      const ip = element.textContent;
+      navigator.clipboard.writeText(ip).then(() => {
+        element.classList.add('copied');
+        element.textContent = '✓ Copied!';
+        setTimeout(() => {
+          element.classList.remove('copied');
+          element.textContent = ip;
+        }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>
