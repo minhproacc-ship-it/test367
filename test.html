@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Kiểm Tra Lịch Sử - VTT</title>
+    <style>
+        :root {
+            --primary: #2e7d32;
+            --primary-dark: #1b5e20;
+            --accent: #1976d2;
+            --warning: #ed6c02;
+            --error: #d32f2f;
+            --bg: #f5f7fa;
+            --white: #ffffff;
+            --text: #1a1a1a;
+            --text-light: #666;
+            --shadow: 0 4px 12px rgba(0,0,0,0.1);
+            --radius: 12px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            background: var(--white);
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            border-top: 4px solid var(--primary);
+        }
+        .school { font-weight: 700; font-size: 1.3rem; color: var(--primary-dark); }
+        .dept { font-weight: 600; color: var(--accent); margin: 5px 0; }
+        .title {
+            display: inline-block;
+            background: linear-gradient(145deg, var(--primary), var(--primary-dark));
+            color: #ffd54f;
+            padding: 15px 40px;
+            font-weight: 700;
+            font-size: 1.8rem;
+            border-radius: 12px;
+            margin: 15px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 6px 0 var(--primary-dark), 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .instructor {
+            color: var(--accent);
+            font-weight: 600;
+            background: #e3f2fd;
+            padding: 6px 20px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        /* Controls */
+        .controls {
+            background: var(--white);
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: flex-end;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex: 1;
+            min-width: 150px;
+        }
+        .input-group label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+        .input-field {
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            color: white;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .btn-login { background: var(--accent); }
+        .btn-start { background: var(--primary); }
+        .btn-submit { background: var(--error); }
+        .btn-retry { background: var(--warning); }
+        .btn-answer { background: #7b1fa2; }
+        .btn-reset { background: #546e7a; }
+
+        .score-box {
+            background: #e8f5e9;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--primary-dark);
+            min-width: 70px;
+            text-align: center;
+            border: 2px solid var(--primary);
+        }
+        .timer-box {
+            font-weight: 700;
+            color: var(--error);
+            font-size: 1.3rem;
+            padding: 10px 15px;
+            background: #ffebee;
+            border-radius: 8px;
+            border: 2px solid #ffcdd2;
+            min-width: 100px;
+            text-align: center;
+        }
+        .timer-box.warning {
+            animation: blink 1s infinite;
+            background: #fff3e0;
+            border-color: #ffcc80;
+            color: var(--warning);
+        }
+        @keyframes blink { 50% { opacity: 0.7; } }
+
+        /* Progress */
+        .progress {
+            background: var(--white);
+            padding: 12px 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 15px;
+        }
+        .progress-bar {
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 6px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), #4caf50);
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .progress-text {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Quiz Area */
+        #quiz-space {
+            background: var(--white);
+            padding: 25px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            min-height: 500px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .welcome {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-light);
+        }
+        .welcome h3 { color: var(--primary); margin-bottom: 10px; font-size: 1.4rem; }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin: 20px 0 15px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #c8e6c9;
+        }
+        .question {
+            background: #f8fafc;
+            padding: 18px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--accent);
+        }
+        .q-title {
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: block;
+            line-height: 1.5;
+        }
+        .q-num {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 26px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-right: 8px;
+        }
+        .options { list-style: none; }
+        .options li {
+            margin: 8px 0;
+            padding: 10px 14px;
+            background: var(--white);
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .options li:hover {
+            border-color: var(--accent);
+            background: #e3f2fd;
+        }
+        .options input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            margin-right: 8px;
+            vertical-align: middle;
+            accent-color: var(--primary);
+        }
+        .options label {
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        /* Table for Part 2 */
+        .tf-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            background: var(--white);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .tf-table th {
+            background: var(--primary);
+            color: white;
+            padding: 12px;
+            font-weight: 600;
+            text-align: center;
+        }
+        .tf-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #eee;
+            text-align: center;
+        }
+        .tf-table td:first-child {
+            text-align: left;
+            width: 65%;
+            font-weight: 500;
+            padding-left: 15px;
+        }
+        .tf-table input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+        }
+
+        .answer-key {
+            color: var(--primary-dark);
+            font-weight: 600;
+            margin-top: 10px;
+            padding: 8px 12px;
+            background: #e8f5e9;
+            border-left: 4px solid var(--primary);
+            border-radius: 0 6px 6px 0;
+            display: none;
+        }
+
+        /* Footer */
+        .footer {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 20px;
+            padding: 15px;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal.active { display: flex; }
+        .modal-box {
+            background: var(--white);
+            padding: 25px;
+            border-radius: 12px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .modal h4 {
+            color: var(--primary-dark);
+            margin-bottom: 15px;
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .modal-btn.cancel { background: #e0e0e0; color: var(--text); }
+        .modal-btn.confirm { background: var(--error); color: white; }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            background: var(--primary);
+            color: white;
+            border-radius: 8px;
+            font-weight: 500;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 2000;
+            transform: translateX(150%);
+            transition: transform 0.3s;
+        }
+        .toast.show { transform: translateX(0); }
+        .toast.error { background: var(--error); }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .controls { flex-direction: column; align-items: stretch; }
+            .input-field { min-width: 100%; }
+            .footer { flex-direction: column; }
+            .btn { width: 100%; justify-content: center; }
+            #quiz-space { padding: 18px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Header -->
+    <div class="header">
+        <div class="school">🏫 TRƯỜNG THPT VÕ TRƯỜNG TOẢN</div>
+        <div class="dept">📜 TỔ LỊCH SỬ</div>
+        <div class="title">🎓 KIỂM TRA LỊCH SỬ</div>
+        <div class="instructor">👨‍🏫 GV: Nguyễn Tấn Đức</div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+        <div class="input-group">
+            <label for="hoTen">👤 Họ và tên</label>
+            <input type="text" id="hoTen" class="input-field" placeholder="Nhập họ tên">
+        </div>
+        <div class="input-group">
+            <label for="lop">🏫 Lớp</label>
+            <input type="text" id="lop" class="input-field" placeholder="Ví dụ: 10A1">
+        </div>
+        <button id="btnLogin" class="btn btn-login" onclick="app.login()">
+            🔐 Đăng nhập
+        </button>
+        <button id="btnStart" class="btn btn-start" onclick="app.startQuiz()" disabled>
+            🚀 Bắt đầu
+        </button>
+        <div style="display:flex;align-items:center;gap:8px;margin-left:auto;">
+            <span>🏆 Điểm:</span>
+            <div id="scoreDisplay" class="score-box">--</div>
+        </div>
+        <div class="timer-box" id="timerBox">⏱️ <span id="timer">50:00</span></div>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress">
+        <div class="progress-text">
+            <span>Tiến độ</span>
+            <span id="progressText">0/30 câu</span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+    </div>
+
+    <!-- Quiz Space -->
+    <div id="quiz-space">
+        <div class="welcome">
+            <h3>👋 Chào mừng bạn!</h3>
+            <p>Nhập họ tên và lớp → Đăng nhập → Bắt đầu làm bài</p>
+            <p style="margin-top:10px;font-size:0.9rem;color:#888;">
+                💡 Mẹo: Kiểm tra Console (F12) nếu gặp lỗi
+            </p>
+        </div>
+    </div>
+
+    <!-- Footer Buttons -->
+    <div class="footer">
+        <button id="btnSubmit" class="btn btn-submit" onclick="app.showConfirm()" disabled>📤 Nộp bài</button>
+        <button id="btnRetry" class="btn btn-retry" onclick="app.retry()" disabled>🔄 Xóa chọn</button>
+        <button id="btnShowAns" class="btn btn-answer" onclick="app.showAnswers()" disabled>👁️ Đáp án</button>
+        <button class="btn btn-reset" onclick="app.resetAll()">🔄 Mới hoàn toàn</button>
+    </div>
+</div>
+
+<!-- Confirm Modal -->
+<div class="modal" id="confirmModal">
+    <div class="modal-box">
+        <h4>⚠️ Xác nhận nộp bài</h4>
+        <p>Bạn có chắc muốn nộp? Không thể sửa sau khi nộp.</p>
+        <div class="modal-buttons">
+            <button class="modal-btn cancel" onclick="app.closeModal()">Hủy</button>
+            <button class="modal-btn confirm" onclick="app.confirmSubmit()">Nộp bài</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+    <span id="toastMsg">Thông báo</span>
+</div>
+
+<script>
+/**
+ * ✅ PHIÊN BẢN SỬA LỖI ĐĂNG NHẬP
+ * - Code đơn giản, dễ debug
+ * - Có console.log để theo dõi
+ * - Xử lý localStorage an toàn
+ */
+
+const app = (function() {
+    // ===== CONFIG =====
+    const CONFIG = {
+        WEB_APP_URL: "https://script.google.com/macros/s/AKfycbxUAV7EOb9-GcY5KTCWFn_Yxm7kGFB3B2ZBwqldndQ0BldXLN1s0R-8lhDaJkzTIBOfSg/exec",
+        TOTAL_TIME: 3000, // 50 phút
+        QUESTIONS_P1: 28,
+        QUESTIONS_P2: 2
+    };
+
+    // ===== STATE =====
+    let state = {
+        isLoggedIn: false,
+        hasSubmitted: false,
+        timer: CONFIG.TOTAL_TIME,
+        timerInterval: null,
+        selectedP1: [],
+        selectedP2: [],
+        user: { hoTen: '', lop: '' }
+    };
+
+    // ===== BANK CÂU HỎI =====
+    const bankP1 = [
+        { q: "Trong xã hội nước ta dưới thời Bắc thuộc, mâu thuẫn cơ bản là:", a: "Giữa nông dân với địa chủ phong kiến.", b: "Giữa nhân dân ta với chính quyền đô hộ phương Bắc.", c: "Giữa quý tộc với chính quyền đô hộ phương Bắc.", d: "Giữa nông dân với chính quyền đô hộ phương Bắc.", ans: "B" },
+        { q: "Sau khi lên làm vua, Lý Bí đặt quốc hiệu nước ta là:", a: "Đại Việt.", b: "Nam Việt.", c: "Vạn Xuân.", d: "Đại Cồ Việt.", ans: "C" },
+        { q: "Cuộc khởi nghĩa đầu tiên của nhân dân Âu Lạc chống ách đô hộ là:", a: "Bà Triệu.", b: "Lý Bí.", c: "Hai Bà Trưng.", d: "Phùng Hưng.", ans: "C" },
+        { q: "Khởi nghĩa của Hai Bà Trưng đã đánh bại quân xâm lược nào?", a: "Nhà Hán.", b: "Nhà Tùy.", c: "Nhà Ngô.", d: "Nhà Lương.", ans: "A" },
+        { q: "Chiến thắng nào chấm dứt hoàn toàn thời kì nghìn năm Bắc thuộc?", a: "Sông Như Nguyệt.", b: "Sông Bạch Đằng (938).", c: "Chi Lăng.", d: "Ngọc Hồi.", ans: "B" },
+        { q: "Ai được nhân dân suy tôn là \"Bố cái đại vương\"?", a: "Mai Thúc Loan.", b: "Phùng Hưng.", c: "Bà Triệu.", d: "Dương Đình Nghệ.", ans: "B" },
+        { q: "Lãnh đạo phong trào Tây Sơn là:", a: "Nhạc, Huệ, Ánh.", b: "Lữ, Ánh, Huệ.", c: "Nhạc, Huệ, Lữ.", d: "Trãi, Huệ, Ánh.", ans: "C" },
+        { q: "Chiến thắng nào của Tây Sơn đánh bại quân Xiêm năm 1785?", a: "Bạch Đằng.", b: "Chi Lăng.", c: "Xương Giang.", d: "Rạch Gầm – Xoài Mút.", ans: "D" },
+        { q: "\"Tôi chỉ muốn cưỡi cơn gió mạnh...\" là câu nói của:", a: "Bà Triệu.", b: "Bà Trưng Trắc.", c: "Bùi Thị Xuân.", d: "Lê Ngọc Hân.", ans: "A" },
+        { q: "Nhân vật quan trọng về mưu lược trong khởi nghĩa Lam Sơn là:", a: "Lê Thành Tông.", b: "Lê Lai.", c: "Nguyễn Trãi.", d: "Nguyễn Bỉnh Khiêm.", ans: "C" },
+        { q: "Thắng lợi khởi nghĩa nào dẫn đến thành lập nhà Lê sơ?", a: "Lý Bí.", b: "Lam Sơn.", c: "Phùng Hưng.", d: "Hai Bà Trưng.", ans: "B" },
+        { q: "Năm 544, Lý Bí lên ngôi Hoàng đế, sử gọi là:", a: "Lý Bắc Đế.", b: "Lý Nam Đế.", c: "Lý Đông Đế.", d: "Lý Tây Đế.", ans: "B" },
+        { q: "Năm 1789, vua Quang Trung đánh bại quân xâm lược nào?", a: "Thanh.", b: "Xiêm.", c: "Minh.", d: "Tống.", ans: "A" },
+        { q: "Lãnh đạo cuộc khởi nghĩa Lam Sơn là:", a: "Nguyễn Trãi.", b: "Lê Lợi.", c: "Lê Lai.", d: "Đinh Liệt.", ans: "B" },
+        { q: "Cuộc khởi nghĩa Hai Bà Trưng là khởi nghĩa thứ mấy thời Bắc thuộc?", a: "Đầu tiên.", b: "Thứ hai.", c: "Thứ chín.", d: "Cuối cùng.", ans: "A" },
+        { q: "Bà Triệu khởi nghĩa chống lại triều đại nào?", a: "Nhà Hán.", b: "Nhà Ngô.", c: "Nhà Đường.", d: "Nhà Minh.", ans: "B" },
+        { q: "Năm 1407, nước ta rơi vào ách thống trị của triều đại nào?", a: "Nhà Hán.", b: "Nhà Đường.", c: "Nhà Minh.", d: "Nhà Tống.", ans: "C" },
+        { q: "Khởi nghĩa Tây Sơn bùng nổ trong bối cảnh Đàng Trong:", a: "Nạn đói quy mô lớn.", b: "Khủng hoảng, mâu thuẫn giai cấp gay gắt.", c: "Nguyễn Phúc Thuần thao túng.", d: "Nhiều khởi nghĩa khác.", ans: "B" },
+        { q: "Điểm độc đáo của khởi nghĩa Hai Bà Trưng là:", a: "Nhiều nữ tướng tham gia lãnh đạo.", b: "Thủy binh là lực lượng tiên phong.", c: "Đánh khi địch suy yếu.", d: "Nhân dân các vùng tham gia.", ans: "A" },
+        { q: "Tên nước Vạn Xuân (544) thể hiện mong muốn gì?", a: "Đất nước lâu dài, yên vui như mùa xuân.", b: "Luôn là mùa xuân tươi đẹp.", c: "Độc lập tự chủ.", d: "Hòa bình ổn định.", ans: "A" },
+        { q: "Nội dung nào KHÔNG đúng về khởi nghĩa Lam Sơn?", a: "Mở ra thời kỳ độc lập mới.", b: "Đánh tan hoàn toàn quân xâm lược hùng mạnh nhất thời đó.", c: "Phát triển từ khởi nghĩa nhỏ thành chiến tranh giải phóng.", d: "Đập tan âm mưu đồng hóa của quân Minh.", ans: "B" },
+        { q: "Nhân tố quyết định thắng lợi các cuộc kháng chiến chống ngoại xâm là:", a: "Sức mạnh đoàn kết toàn dân.", b: "Ngoại giao khéo léo.", c: "Vũ khí hiện đại.", d: "Địa hình thuận lợi.", ans: "A" },
+        { q: "Năm 40-43 là thời gian của cuộc khởi nghĩa nào?", a: "Bà Triệu.", b: "Hai Bà Trưng.", c: "Lý Bí.", d: "Mai Thúc Loan.", ans: "B" },
+        { q: "Ai là người dâng \"Sớ thất trảm\" thời Trần?", a: "Chu Văn An.", b: "Trần Hưng Đạo.", c: "Nguyễn Trãi.", d: "Lê Quý Đôn.", ans: "A" },
+        { q: "Chiến thắng Rạch Gầm - Xoài Mút tiêu diệt quân nào?", a: "Xiêm.", b: "Thanh.", c: "Pháp.", d: "Mông Cổ.", ans: "A" },
+        { q: "Lê Lợi phất cờ khởi nghĩa tại đâu?", a: "Lam Sơn (Thanh Hóa).", b: "Chí Linh.", c: "Đông Quan.", d: "Tây Đô.", ans: "A" },
+        { q: "Quân Lam Sơn giành thắng lợi quyết định tại trận nào?", a: "Chi Lăng - Xương Giang.", b: "Bạch Đằng.", c: "Như Nguyệt.", d: "Ngọc Hồi.", ans: "A" },
+        { q: "Chính sách cai trị của nhà Minh được gọi là:", a: "Đồng hóa và khủng bố.", b: "Khai thác thuộc địa.", c: "Khủng bố tinh thần.", d: "Ngu dân.", ans: "A" },
+        { q: "Vua Quang Trung mất năm nào?", a: "1792.", b: "1789.", c: "1802.", d: "1771.", ans: "A" },
+        { q: "Ai là người viết Bình Ngô Đại Cáo?", a: "Nguyễn Trãi.", b: "Lê Lợi.", c: "Nguyễn Du.", d: "Lê Thánh Tông.", ans: "A" },
+        { q: "Thời kì Bắc thuộc lần 1 bắt đầu sau thất bại của:", a: "An Dương Vương.", b: "Vua Hùng.", c: "Lý Nam Đế.", d: "Mai Hắc Đế.", ans: "A" },
+        { q: "Khởi nghĩa Lý Bí nổ ra vào thế kỷ nào?", a: "VI.", b: "X.", c: "XV.", d: "XVIII.", ans: "A" },
+        { q: "Mai Thúc Loan khởi nghĩa chống nhà nào?", a: "Đường.", b: "Hán.", c: "Tùy.", d: "Lương.", ans: "A" },
+        { q: "Thành Tống Bình ngày nay là địa danh nào?", a: "Hà Nội.", b: "Huế.", c: "Sài Gòn.", d: "Đà Nẵng.", ans: "A" },
+        { q: "Ngô Quyền đánh quân Nam Hán năm nào?", a: "938.", b: "981.", c: "1288.", d: "1077.", ans: "A" },
+        { q: "Ai lãnh đạo nhân dân kháng chiến chống quân Tống (981)?", a: "Lê Hoàn.", b: "Đinh Bộ Lĩnh.", c: "Lý Thường Kiệt.", d: "Trần Thủ Độ.", ans: "A" },
+        { q: "Phòng tuyến sông Như Nguyệt gắn liền với ai?", a: "Lý Thường Kiệt.", b: "Trần Hưng Đạo.", c: "Lê Lợi.", d: "Quang Trung.", ans: "A" },
+        { q: "Ba lần kháng chiến chống Nguyên Mông diễn ra vào triều đại nào?", a: "Trần.", b: "Lý.", c: "Lê.", d: "Nguyễn.", ans: "A" },
+        { q: "Tác giả 'Hịch tướng sĩ' là ai?", a: "Trần Quốc Tuấn.", b: "Trần Quang Khải.", c: "Trần Nhật Duật.", d: "Trần Khánh Dư.", ans: "A" },
+        { q: "Chiến thắng Đông Bộ Đầu diễn ra năm nào?", a: "1258.", b: "1285.", c: "1288.", d: "1427.", ans: "A" },
+        { q: "Lam Sơn thực hiện chiến thuật gì?", a: "Vây thành diệt viện.", b: "Tiên phát chế nhân.", c: "Vườn không nhà trống.", d: "Tổng tấn công.", ans: "A" },
+        { q: "Hội thề Lũng Nhai có bao nhiêu người tham gia?", a: "19.", b: "18.", c: "20.", d: "10.", ans: "A" },
+        { q: "Quân Thanh xâm lược nước ta vào năm nào?", a: "1788.", b: "1789.", c: "1771.", d: "1802.", ans: "A" },
+        { q: "Đô đốc Long chỉ huy cánh quân nào tiến vào Thăng Long?", a: "Cánh quân đánh đồn Ngọc Hồi.", b: "Cánh quân đánh đồn Đống Đa.", c: "Cánh quân Tây Sơn.", d: "Cánh quân phía Bắc.", ans: "B" },
+        { q: "Sáu bộ thời Lê Thánh Tông gồm những gì?", a: "Lại, Hộ, Lễ, Binh, Hình, Công.", b: "Lại, Hộ, Lễ, Binh, Hình, Học.", c: "Lại, Tài, Lễ, Binh, Hình, Công.", d: "Lại, Hộ, Luật, Binh, Hình, Công.", ans: "A" },
+        { q: "Bộ luật nào ra đời thời Lê sơ?", a: "Hồng Đức.", b: "Gia Long.", c: "Hình thư.", d: "Quốc triều.", ans: "A" },
+        { q: "Vua nào thực hiện cải cách hành chính lớn nhất thế kỷ XV?", a: "Lê Thánh Tông.", b: "Lê Thái Tổ.", c: "Lê Nhân Tông.", d: "Lê Hiến Tông.", ans: "A" },
+        { q: "Bản đồ đầu tiên của nước ta thời Lê sơ tên là gì?", a: "Hồng Đức bản đồ.", b: "Đại Nam nhất thống chí.", c: "Vạn Xuân địa dư.", d: "Thiên Nam tứ chí.", ans: "A" },
+        { q: "Ai là \"Trạng Lường\" nổi tiếng của nước ta?", a: "Lương Thế Vinh.", b: "Nguyễn Hiền.", c: "Mạc Đĩnh Chi.", d: "Trần Thuấn Trung.", ans: "A" },
+        { q: "Chiến thắng Bạch Đằng năm 938 do ai lãnh đạo?", a: "Ngô Quyền.", b: "Đinh Bộ Lĩnh.", c: "Lê Hoàn.", d: "Lý Thường Kiệt.", ans: "A" }
+    ];
+
+    const bankP2 = [
+        { 
+            q: "Về cuộc cải cách của vua Lê Thánh Tông năm 1471:",
+            items: ["Bãi bỏ một số chức đại thần không học thức.", "Quyền lực tập trung cao độ vào tay nhà vua.", "Là cuộc cải cách hành chính quy mô lớn, toàn diện.", "Trọng dụng công thần một cách đặc biệt, không theo năng lực."],
+            ans: [true, true, true, false]
+        },
+        {
+            q: "Về chính sách Quân điền thời Lê sơ:",
+            items: ["Đảm bảo dân đinh có ruộng cày cấy, hạn chế tập trung ruộng đất.", "Nhà nước là chủ sở hữu tối cao về ruộng đất.", "Gây ra sự hỗn loạn trong sản xuất nông nghiệp.", "Áp dụng cho cả trẻ mồ côi, góa phụ và quan lại."],
+            ans: [true, true, false, true]
+        },
+        {
+            q: "Về chiến thắng Ngọc Hồi - Đống Đa 1789:",
+            items: ["Đánh bại hoàn toàn 29 vạn quân Thanh xâm lược.", "Diễn ra vào đêm mùng 4 tết Kỷ Dậu (1789).", "Gắn liền với thiên tài quân sự của vua Quang Trung.", "Kết thúc thời kỳ chia cắt Đàng Trong - Đàng Ngoài."],
+            ans: [true, false, true, false]
+        },
+        {
+            q: "Về Khởi nghĩa Lam Sơn (1418 - 1427):",
+            items: ["Chống lại ách đô hộ của nhà Minh.", "Bắt đầu từ vùng núi Lam Sơn (Thanh Hóa).", "Có sự tham gia của Nguyễn Trãi - nhà mưu lược tài ba.", "Thắng lợi ngay từ năm đầu tiên khởi nghĩa."],
+            ans: [true, true, true, false]
+        },
+        {
+            q: "Về nhà nước Vạn Xuân (544):",
+            items: ["Được thành lập sau khởi nghĩa Lý Bí chống Lương.", "Quốc hiệu thể hiện mong ước đất nước trường tồn.", "Đóng đô ở vùng cửa sông Tô Lịch (Hà Nội ngày nay).", "Tồn tại đến hết thế kỷ X."],
+            ans: [true, true, true, false]
+        }
+    ];
+
+    // ===== UTILS =====
+    function $(id) { return document.getElementById(id); }
+    
+    function formatTime(sec) {
+        const m = Math.floor(sec / 60).toString().padStart(2, '0');
+        const s = (sec % 60).toString().padStart(2, '0');
+        return `${m}:${s}`;
+    }
+
+    function showToast(msg, isError = false) {
+        console.log('[TOAST]', msg);
+        const toast = $('toast');
+        $('toastMsg').textContent = msg;
+        toast.className = 'toast' + (isError ? ' error' : '') + ' show';
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    function safeLocalStorage(key, value = null) {
+        try {
+            if (value === null) {
+                return localStorage.getItem(key);
+            }
+            localStorage.setItem(key, value);
+            return true;
+        } catch (e) {
+            console.warn('[localStorage Error]', e);
+            return false;
+        }
+    }
+
+    function updateProgress() {
+        let answered = 0;
+        state.selectedP1.forEach((_, i) => {
+            if (document.querySelector(`input[name="p1_${i}"]:checked`)) answered++;
+        });
+        state.selectedP2.forEach((_, i) => {
+            let all = true;
+            for (let j = 0; j < 4; j++) {
+                if (!document.querySelector(`input[name="p2_${i}_${j}"]:checked`)) { all = false; break; }
+            }
+            if (all) answered++;
+        });
+        const total = state.selectedP1.length + state.selectedP2.length;
+        const pct = total > 0 ? (answered / total) * 100 : 0;
+        $('progressFill').style.width = pct + '%';
+        $('progressText').textContent = `${answered}/${total} câu`;
+    }
+
+    // ===== CORE FUNCTIONS =====
+    function login() {
+        console.log('[LOGIN] Attempting...');
+        const ten = $('hoTen').value.trim();
+        const lop = $('lop').value.trim();
+        
+        console.log('[LOGIN] Input:', { ten, lop });
+        
+        if (ten && lop) {
+            state.isLoggedIn = true;
+            state.user = { hoTen: ten, lop };
+            
+            $('btnStart').disabled = false;
+            showToast('✅ Đăng nhập thành công!');
+            
+            // Save to localStorage (with error handling)
+            safeLocalStorage('vtt_user', JSON.stringify(state.user));
+            
+            console.log('[LOGIN] Success:', state.user);
+        } else {
+            showToast('⚠️ Vui lòng nhập đủ Họ tên và Lớp!', true);
+            console.log('[LOGIN] Failed: Missing input');
+        }
+    }
+
+    function startQuiz() {
+        console.log('[START] Starting quiz...');
+        if (!state.isLoggedIn) {
+            showToast('⚠️ Vui lòng đăng nhập trước!', true);
+            return;
+        }
+        
+        state.hasSubmitted = false;
+        $('btnStart').disabled = true;
+        $('btnSubmit').disabled = false;
+        $('btnRetry').disabled = false;
+        $('btnShowAns').disabled = false;
+        $('scoreDisplay').textContent = '--';
+        
+        // Shuffle and select questions
+        state.selectedP1 = [...bankP1].sort(() => Math.random() - 0.5).slice(0, CONFIG.QUESTIONS_P1);
+        state.selectedP2 = [...bankP2].sort(() => Math.random() - 0.5).slice(0, CONFIG.QUESTIONS_P2);
+        
+        console.log('[START] Questions loaded:', { p1: state.selectedP1.length, p2: state.selectedP2.length });
+        
+        renderQuiz();
+        startTimer();
+        updateProgress();
+        showToast('🚀 Bắt đầu làm bài! Chúc bạn làm tốt!');
+    }
+
+    function renderQuiz() {
+        const container = $('quiz-space');
+        let html = '';
+        
+        // Part 1
+        html += `<h3 class="section-title">📝 PHẦN I: TRẮC NGHIỆM (28 câu)</h3>`;
+        state.selectedP1.forEach((c, i) => {
+            html += `<div class="question">
+                <span class="q-title"><span class="q-num">${i+1}</span>${c.q}</span>
+                <ul class="options">
+                    <li><label><input type="radio" name="p1_${i}" value="A" onchange="app.updateProgress()"> <strong>A.</strong> ${c.a}</label></li>
+                    <li><label><input type="radio" name="p1_${i}" value="B" onchange="app.updateProgress()"> <strong>B.</strong> ${c.b}</label></li>
+                    <li><label><input type="radio" name="p1_${i}" value="C" onchange="app.updateProgress()"> <strong>C.</strong> ${c.c}</label></li>
+                    <li><label><input type="radio" name="p1_${i}" value="D" onchange="app.updateProgress()"> <strong>D.</strong> ${c.d}</label></li>
+                </ul>
+                <div id="ans_p1_${i}" class="answer-key">✨ Đáp án: <strong>${c.ans}</strong></div>
+            </div>`;
+        });
+        
+        // Part 2
+        html += `<h3 class="section-title">✅ PHẦN II: ĐÚNG/SAI (2 câu)</h3>`;
+        state.selectedP2.forEach((c, i) => {
+            html += `<div class="question">
+                <span class="q-title"><span class="q-num">${i+29}</span>${c.q}</span>
+                <table class="tf-table">
+                    <tr><th>Nội dung</th><th>✅ Đúng</th><th>❌ Sai</th></tr>`;
+            c.items.forEach((item, idx) => {
+                html += `<tr>
+                    <td>${item}</td>
+                    <td><input type="radio" name="p2_${i}_${idx}" value="true" onchange="app.updateProgress()"></td>
+                    <td><input type="radio" name="p2_${i}_${idx}" value="false" onchange="app.updateProgress()"></td>
+                </tr>`;
+            });
+            html += `</table>
+                <div id="ans_p2_${i}" class="answer-key">✨ Đáp án: ${c.ans.map(a => a ? '✅' : '❌').join(' ')}</div>
+            </div>`;
+        });
+        
+        container.innerHTML = html;
+        console.log('[RENDER] Quiz rendered');
+    }
+
+    function startTimer() {
+        if (state.timerInterval) clearInterval(state.timerInterval);
+        state.timer = CONFIG.TOTAL_TIME;
+        updateTimerDisplay();
+        
+        state.timerInterval = setInterval(() => {
+            state.timer--;
+            updateTimerDisplay();
+            
+            if (state.timer === 300) {
+                $('timerBox').classList.add('warning');
+                showToast('⏰ Còn 5 phút!', true);
+            }
+            if (state.timer <= 0) {
+                clearInterval(state.timerInterval);
+                showToast('⏰ Hết giờ! Tự động nộp bài.', true);
+                submitQuiz();
+            }
+        }, 1000);
+        console.log('[TIMER] Started');
+    }
+
+    function updateTimerDisplay() {
+        $('timer').textContent = formatTime(state.timer);
+    }
+
+    function showConfirm() {
+        if (state.hasSubmitted) return;
+        $('confirmModal').classList.add('active');
+    }
+
+    function closeModal() {
+        $('confirmModal').classList.remove('active');
+    }
+
+    function confirmSubmit() {
+        closeModal();
+        submitQuiz();
+    }
+
+    function submitQuiz() {
+        if (state.hasSubmitted) return;
+        state.hasSubmitted = true;
+        clearInterval(state.timerInterval);
+        $('btnSubmit').disabled = true;
+        $('btnRetry').disabled = true;
+        
+        let correct = 0;
+        const totalP1 = state.selectedP1.length;
+        const totalP2 = state.selectedP2.length;
+        
+        // Grade Part 1
+        state.selectedP1.forEach((c, i) => {
+            const picked = document.querySelector(`input[name="p1_${i}"]:checked`)?.value;
+            if (picked === c.ans) correct++;
+        });
+        
+        // Grade Part 2 (all 4 must be correct)
+        state.selectedP2.forEach((c, i) => {
+            let allCorrect = true;
+            c.items.forEach((_, idx) => {
+                const picked = document.querySelector(`input[name="p2_${i}_${idx}"]:checked`)?.value;
+                const val = picked === 'true' ? true : (picked === 'false' ? false : null);
+                if (val !== c.ans[idx]) allCorrect = false;
+            });
+            if (allCorrect) correct++;
+        });
+        
+        const score = ((correct * 10) / (totalP1 + totalP2)).toFixed(1);
+        $('scoreDisplay').textContent = score;
+        
+        showToast(`🎉 Hoàn thành! Điểm: ${score}/10`);
+        sendData(score, correct, totalP1 + totalP2);
+        
+        console.log('[SUBMIT] Score:', score, 'Correct:', correct);
+    }
+
+    function sendData(score, correct, total) {
+        const data = {
+            hoTen: state.user.hoTen,
+            lop: state.user.lop,
+            diem: parseFloat(score),
+            soDung: correct,
+            tongSoCau: total,
+            timestamp: new Date().toISOString()
+        };
+        
+        console.log('[SEND] Data:', data);
+        
+        fetch(CONFIG.WEB_APP_URL, {
+            method: 'POST',
+            mode: 'cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+        .then(res => {
+            console.log('[SEND] Response:', res);
+            showToast('📤 Đã gửi kết quả!');
+        })
+        .catch(err => {
+            console.error('[SEND] Error:', err);
+            // Fallback: save to localStorage
+            const saved = JSON.parse(safeLocalStorage('vtt_results') || '[]');
+            saved.push({ ...data, savedAt: new Date().toISOString() });
+            safeLocalStorage('vtt_results', JSON.stringify(saved));
+            showToast('⚠️ Lưu tạm kết quả (sẽ gửi khi có mạng)', true);
+        });
+    }
+
+    function retry() {
+        if (state.hasSubmitted) {
+            showToast('⚠️ Bài đã nộp! Nhấn "Mới hoàn toàn" để làm lại.', true);
+            return;
+        }
+        document.querySelectorAll('input[type="radio"]:checked').forEach(r => r.checked = false);
+        updateProgress();
+        showToast('🔄 Đã xóa tất cả lựa chọn');
+    }
+
+    function showAnswers() {
+        if (!state.hasSubmitted && !confirm('⚠️ Bạn chưa nộp bài! Hiện đáp án ngay?')) return;
+        
+        document.querySelectorAll('.answer-key').forEach(el => {
+            el.style.display = 'block';
+        });
+        $('btnRetry').disabled = true;
+        showToast('👁️ Đã hiển thị đáp án');
+    }
+
+    function resetAll() {
+        if (confirm('🔄 Làm mới toàn bộ? Mọi tiến độ sẽ mất!')) {
+            safeLocalStorage('vtt_user', null); // clear
+            location.reload();
+        }
+    }
+
+    // Init
+    function init() {
+        console.log('[INIT] App starting...');
+        
+        // Restore user from localStorage
+        const saved = safeLocalStorage('vtt_user');
+        if (saved) {
+            try {
+                const user = JSON.parse(saved);
+                $('hoTen').value = user.hoTen || '';
+                $('lop').value = user.lop || '';
+                if (user.hoTen && user.lop) {
+                    state.isLoggedIn = true;
+                    state.user = user;
+                    $('btnStart').disabled = false;
+                    console.log('[INIT] Restored user:', user);
+                }
+            } catch (e) {
+                console.warn('[INIT] Parse error:', e);
+            }
+        }
+        
+        console.log('[INIT] Ready. isLoggedIn:', state.isLoggedIn);
+    }
+
+    // Public API
+    return {
+        login,
+        startQuiz,
+        renderQuiz,
+        startTimer,
+        updateTimerDisplay,
+        updateProgress,
+        showConfirm,
+        closeModal,
+        confirmSubmit,
+        submitQuiz,
+        retry,
+        showAnswers,
+        resetAll,
+        init
+    };
+})();
+
+// Start app when DOM ready
+document.addEventListener('DOMContentLoaded', () => {
+    app.init();
+});
+
+// Close modal on outside click
+$('confirmModal')?.addEventListener('click', (e) => {
+    if (e.target.id === 'confirmModal') app.closeModal();
+});
+</script>
+
+</body>
+</html>
